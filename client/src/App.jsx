@@ -10,8 +10,18 @@ import Login from './pages/Login';
 
 import './styles/theme.css';
 
+// PrivateRoute now checks authReady before rendering
 const PrivateRoute = ({ children }) => {
-  const { user } = useAuth();
+  const { user, authReady } = useAuth();
+
+  if (!authReady) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="text-muted">Loading...</div>
+      </div>
+    );
+  }
+
   return user ? children : <Navigate to="/login" replace />;
 };
 
@@ -19,8 +29,6 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-
-      {/* Protected routes wrapped inside layout */}
       <Route
         path="/"
         element={
@@ -35,11 +43,7 @@ function AppRoutes() {
         <Route path="users" element={<UserManagement />} />
       </Route>
 
-      {/* Catch all - redirect to dashboard if authenticated or login otherwise */}
-      <Route
-        path="*"
-        element={<Navigate to="/" replace />}
-      />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
