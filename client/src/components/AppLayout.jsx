@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
-function AppLayout({ children }) {
+function AppLayout() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
@@ -25,11 +26,10 @@ function AppLayout({ children }) {
           className="flex-grow-1 p-3"
           style={{
             marginLeft: isMobile ? 0 : '60px',
-            marginRight: 0,
-            marginTop: "60px"
+            marginTop: '60px',
           }}
         >
-          {children}
+          <Outlet />
         </main>
       </div>
       <Footer />
