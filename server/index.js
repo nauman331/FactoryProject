@@ -18,19 +18,26 @@ connectDB();
 // Initialize express app
 const app = express();
 
-// Set CORS options dynamically based on the environment (local vs Vercel)
+// CORS options with multiple allowed origins
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? 'https://factory-project-rho.vercel.app'  // Frontend URL for Vercel
-    : 'http://localhost:3000',  // Local frontend URL (adjust port if needed)
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true, // Allow cookies and authorization headers
+    origin: [
+        'https://factory-project-rho.vercel.app',  // Frontend URL for Vercel
+        'http://localhost:5173/',                    // Local frontend URL  
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true, // Allow cookies and authorization headers
 };
 
 // Middleware
-app.use(cors(corsOptions)); // Use CORS middleware with dynamic options
+app.use(cors(corsOptions)); // Use CORS middleware with multiple origins
 app.use(express.json());
+
+app.get('/', (req, res) => {
+    res.send('API is running');  // Basic message to confirm server is working
+  });
+  
+
 
 // Routes
 app.use('/api/auth', authRoutes);
