@@ -18,8 +18,18 @@ connectDB();
 // Initialize express app
 const app = express();
 
+// Set CORS options dynamically based on the environment (local vs Vercel)
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? 'https://factory-project-rho.vercel.app'  // Frontend URL for Vercel
+    : 'http://localhost:3000',  // Local frontend URL (adjust port if needed)
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true, // Allow cookies and authorization headers
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions)); // Use CORS middleware with dynamic options
 app.use(express.json());
 
 // Routes
@@ -27,6 +37,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/users', userRoutes);
+
+// Handle OPTIONS preflight request globally
+app.options('*', cors(corsOptions));
 
 // Server Listening
 const PORT = process.env.PORT || 5000;
