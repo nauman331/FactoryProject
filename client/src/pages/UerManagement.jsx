@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { backendURL } from '../utils/exports';
 
 const UserManagement = () => {
   const { user } = useAuth();
@@ -13,7 +14,7 @@ const UserManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/users', {
+      const res = await fetch(`${backendURL}/users`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }

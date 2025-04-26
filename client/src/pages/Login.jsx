@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Form, Button, Card, Alert, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { backendURL } from '../utils/exports';
 
 function Login() {
   const { login } = useAuth();
@@ -21,7 +22,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const res = await fetch(`${backendURL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
