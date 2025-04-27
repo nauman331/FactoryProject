@@ -7,6 +7,7 @@ import Orders from './pages/Orders';
 import Inventory from './pages/Inventory';
 import UserManagement from './pages/UerManagement';
 import Login from './pages/Login';
+import CreateJob from './pages/CreateJob';
 
 import './styles/theme.css';
 
@@ -40,6 +41,7 @@ function AppRoutes() {
         <Route index element={<Dashboard />} />
         <Route path="orders" element={<Orders />} />
         <Route path="inventory" element={<Inventory />} />
+        <Route path="createjob" element={<CreateJob />} />
         <Route path="users" element={<UserManagement />} />
       </Route>
 

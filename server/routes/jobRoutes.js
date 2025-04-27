@@ -21,12 +21,6 @@ router.post('/', protect, checkRole(['admin', 'superadmin']), singleThumbnail, (
 router.get('/', protect, getJobs);
 
 // Route to update a job by ID
-router.put('/:id', protect, checkRole(['admin', 'superadmin']), singleThumbnail, (req, res, next) => {
-  if (req.file) {
-    return updateJob(req, res);
-  } else {
-    res.status(400).json({ message: 'Thumbnail image is required to update' });
-  }
-});
+router.put('/:id', protect, checkRole(['admin', 'superadmin']), singleThumbnail);
 
 module.exports = router;
