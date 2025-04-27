@@ -18,11 +18,11 @@ connectDB();
 // Initialize express app
 const app = express();
 
-// CORS options
+// CORS options with multiple allowed origins
 const corsOptions = {
     origin: [
         'https://factory-project-rho.vercel.app',  // Frontend URL for Vercel
-        'http://localhost:5173',                   // Local frontend URL
+        'http://localhost:5173/',                    // Local frontend URL  
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -30,21 +30,21 @@ const corsOptions = {
 };
 
 // Middleware
-app.use(cors(corsOptions));             // Enable CORS before routes
-app.options('*', cors(corsOptions));     // Handle preflight OPTIONS requests globally
-app.use(express.json());                 // Parse incoming JSON
+app.use(cors(corsOptions)); // Use CORS middleware with multiple origins
+app.use(express.json());
 
-// Basic route
 app.get('/', (req, res) => {
-    res.send('API is running');
+    res.send('API is running');  // Basic message to confirm server is working
 });
 
-// API routes
+
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/users', userRoutes);
 
-// Server Listener
+
+// Server Listening
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

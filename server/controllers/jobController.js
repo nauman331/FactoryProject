@@ -1,16 +1,24 @@
 const cloudinary = require('../utils/cloudinary');
 const fs = require('fs');
+const Job = require('../models/Job'); // Make sure to import your Job model
 
 const uploadToCloudinary = async (filePath, folder) => {
-  const res = await cloudinary.uploader.upload(filePath, {
-    folder,
-    resource_type: 'auto'
-  });
-  fs.unlinkSync(filePath);
-  return res.secure_url;
+  try {
+    const res = await cloudinary.uploader.upload(filePath, {
+      folder,
+      resource_type: 'auto',
+    });
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);  // Clean up after upload
+    }
+    return res.secure_url;
+  } catch (err) {
+    console.error('Error uploading to Cloudinary:', err);
+    throw new Error('Cloudinary upload failed');
+  }
 };
 
-exports.createJob = async (req, res) => {
+const createJob = async (req, res) => {
   try {
     const { title } = req.body;
     let thumbnailUrl = null;
@@ -31,7 +39,7 @@ exports.createJob = async (req, res) => {
   }
 };
 
-exports.updateJob = async (req, res) => {
+const updateJob = async (req, res) => {
   try {
     const { title } = req.body;
     let updateData = { title };
@@ -53,4 +61,19 @@ exports.updateJob = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'Failed to update job', error: err.message });
   }
+};
+
+const getJobs = async (req, res) => {
+  try {
+    const jobs = await Job.find();
+    res.json({ jobs });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to retrieve jobs', error: err.message });
+  }
+};
+
+module.exports = {
+  createJob,
+  getJobs,
+  updateJob,
 };
