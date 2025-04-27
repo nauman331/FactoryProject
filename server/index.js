@@ -27,31 +27,21 @@ const corsOptions = {
     credentials: true, // Allow cookies and authorization headers
 };
 
-// Middleware to handle OPTIONS preflight requests
-app.use((req, res, next) => {
-    if (req.method === 'OPTIONS') {
-        res.header('Access-Control-Allow-Origin', '*'); // Or specify the allowed origin
-        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-        return res.status(200).end();
-    }
-    next();
-});
-
 // Middleware
 app.use(cors(corsOptions)); // Use CORS middleware with multiple origins
 app.use(express.json());
 
-// Basic route to test server
 app.get('/', (req, res) => {
-    res.send('API is running');
+    res.send('API is running');  // Basic message to confirm server is working
 });
+
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/users', userRoutes);
+
 
 // Server Listening
 const PORT = process.env.PORT || 5000;
