@@ -1,5 +1,5 @@
 function Orders() {
-    return <h2>Manage Orders</h2>;
+    return <h2>Manage Tasks</h2>;
   }
   
   export default Orders;

@@ -4,7 +4,7 @@ const taskSchema = new mongoose.Schema({
   taskId: { type: String, unique: true },
   job: { type: mongoose.Schema.Types.ObjectId, ref: 'Job' },
   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  status: { type: String, default: 'pending' },
+  status: { type: String, enum: ['pending', 'in-progress', 'completed'], default: 'pending' },
   description: String,
   client: {
     name: String,
@@ -12,7 +12,7 @@ const taskSchema = new mongoose.Schema({
   },
   images: [String],       // Cloudinary URLs
   documents: [String],    // Cloudinary URLs
-  voiceMessage: [String],    // Cloudinary URL
+  voiceMessage: [String], // Cloudinary URLs
 }, { timestamps: true });
 
 module.exports = mongoose.model('Task', taskSchema);

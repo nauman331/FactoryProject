@@ -35,8 +35,7 @@ app.use(express.json());
 
 app.get('/', (req, res) => {
     res.send('API is running');  // Basic message to confirm server is working
-  });
-  
+});
 
 
 // Routes

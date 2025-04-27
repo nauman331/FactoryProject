@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { backendURL } from '../utils/exports';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const UserManagement = () => {
   const { user } = useAuth();
@@ -11,8 +12,10 @@ const UserManagement = () => {
     password: '',
     role: 'admin'
   });
+  const [loading, setLoading] = useState(false);
 
   const fetchUsers = async () => {
+    setLoading(true);
     try {
       const res = await fetch(`${backendURL}/users`, {
         headers: {
@@ -23,13 +26,15 @@ const UserManagement = () => {
       setUsers(data);
     } catch (err) {
       console.error('Error fetching users:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      await fetch('http://localhost:5000/api/auth/register', {
+      await fetch(`${backendURL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,7 +52,7 @@ const UserManagement = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
     try {
-      await fetch(`http://localhost:5000/api/users/${id}`, {
+      await fetch(`${backendURL}/users/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -66,7 +71,11 @@ const UserManagement = () => {
   }, [user]);
 
   if (user?.role !== 'superadmin') {
-    return <div className="container mt-5"><h4>Access Denied</h4></div>;
+    return (
+      <div className="container mt-5">
+        <h4>Access Denied</h4>
+      </div>
+    );
   }
 
   return (
@@ -118,40 +127,71 @@ const UserManagement = () => {
         </div>
       </form>
 
-      <div className="table-responsive">
-        <table className="table table-striped table-bordered align-middle">
-          <thead className="table-dark">
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th style={{ width: '100px' }}>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((u) => (
-              <tr key={u._id}>
-                <td>{u.name}</td>
-                <td>{u.email}</td>
-                <td>{u.role}</td>
-                <td>
-                  <button
-                    className="btn btn-sm btn-danger"
-                    onClick={() => handleDelete(u._id)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {users.length === 0 && (
-              <tr>
-                <td colSpan="4" className="text-center">No users found</td>
-              </tr>
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        <>
+          {/* Desktop Table */}
+          <div className="d-none d-md-block table-responsive">
+            <table className="table table-striped table-bordered align-middle">
+              <thead className="table-dark">
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th style={{ width: '100px' }}>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.length > 0 ? (
+                  users.map(u => (
+                    <tr key={u._id}>
+                      <td>{u.name}</td>
+                      <td>{u.email}</td>
+                      <td>{u.role}</td>
+                      <td>
+                        <button
+                          className="btn btn-sm btn-danger"
+                          onClick={() => handleDelete(u._id)}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="text-center">No users found</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="d-md-none">
+            {users.length > 0 ? (
+              users.map(u => (
+                <div key={u._id} className="card mb-3">
+                  <div className="card-body">
+                    <h5 className="card-title">{u.name}</h5>
+                    <p className="card-text mb-1"><strong>Email:</strong> {u.email}</p>
+                    <p className="card-text mb-3"><strong>Role:</strong> {u.role}</p>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDelete(u._id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center">No users found</div>
             )}
-          </tbody>
-        </table>
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
