@@ -9,7 +9,7 @@ const upload = require('../middleware/multer'); // <-- Add multer
 const singleThumbnail = upload.single('thumbnail'); // This should match the field name in your form
 
 // Route to create a job
-router.post('/', protect, checkRole(['admin']), singleThumbnail, (req, res, next) => {
+router.post('/', protect, checkRole(['admin', 'superadmin']), singleThumbnail, (req, res, next) => {
   if (req.file) {
     return createJob(req, res);
   } else {
@@ -21,7 +21,7 @@ router.post('/', protect, checkRole(['admin']), singleThumbnail, (req, res, next
 router.get('/', protect, getJobs);
 
 // Route to update a job by ID
-router.put('/:id', protect, checkRole(['admin']), singleThumbnail, (req, res, next) => {
+router.put('/:id', protect, checkRole(['admin', 'superadmin']), singleThumbnail, (req, res, next) => {
   if (req.file) {
     return updateJob(req, res);
   } else {

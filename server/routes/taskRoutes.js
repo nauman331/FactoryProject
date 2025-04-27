@@ -19,11 +19,11 @@ const fileFields = upload.array('files', 5);
 // Upload single voice file
 const voiceUpload = upload.single('voice');
 
-router.post('/', protect, checkRole(['admin']), fileFields, createTask);
+router.post('/', protect, checkRole(['admin', 'superadmin']), fileFields, createTask);
 router.get('/', protect, getAllTasks);
-router.put('/:id', protect, checkRole(['admin']), updateTask);
-router.patch('/:id/status', protect, checkRole(['admin', 'member']), updateTaskStatus);
-router.post('/:id/voice', protect, checkRole(['admin', 'member']), voiceUpload, addVoiceMessage);
-router.delete('/:id', protect, checkRole(['admin']), deleteTask);
+router.put('/:id', protect, checkRole(['admin', 'superadmin']), updateTask);
+router.patch('/:id/status', protect, updateTaskStatus);
+router.post('/:id/voice', protect, voiceUpload, addVoiceMessage);
+router.delete('/:id', protect, checkRole(['admin', 'superadmin']), deleteTask);
 
 module.exports = router;
