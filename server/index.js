@@ -22,7 +22,7 @@ const app = express();
 const corsOptions = {
     origin: [
         'https://factory-project-rho.vercel.app',  // Frontend URL for Vercel
-        'http://localhost:5173/',                    // Local frontend URL  
+        'http://localhost:5173',                    // Local frontend URL  
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
