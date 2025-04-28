@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "version": 2,
   "builds": [
     {
@@ -20,20 +19,3 @@
     }
   ]
 }
-=======
-    "version": 2,
-    "builds": [
-      { "src": "*.js", "use": "@vercel/node" }
-    ],
-    "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "/",
-          "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-          "headers": {
-              "Access-Control-Allow-Origin": "*"
-          }
-      }
-    ]
-  }
->>>>>>> c41cb981d1437857a61e717e1f2e89ebc395e8bd
