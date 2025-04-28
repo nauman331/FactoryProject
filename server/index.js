@@ -16,22 +16,23 @@ connectDB();
 // Initialize express app
 const app = express();
 
-// CORS options (Allow All Origins)
+// CORS options
 const corsOptions = {
-    origin: '*', // Allow all origins
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: false // Credentials cannot be used when Access-Control-Allow-Origin is '*'
 };
 
 // Middleware
 app.use(cors(corsOptions));
 app.use(express.json());
-app.options('*', cors(corsOptions)); // Handle preflight requests
 
-// Health Check Route
+// Manually handle preflight (OPTIONS) requests globally
+app.options('*', cors(corsOptions));
+
+// Health check
 app.get('/', (req, res) => {
-    res.send('API is running');
+    res.status(200).send('API is running');
 });
 
 // API Routes
@@ -40,6 +41,8 @@ app.use('/api/jobs', jobRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/users', userRoutes);
 
-// Server Listening
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// Export app for Vercel
+module.exports = app;
