@@ -16,31 +16,27 @@ connectDB();
 // Initialize express app
 const app = express();
 
-// CORS options with multiple allowed origins
-const whitelist = [
-    'https://factory-project-rho.vercel.app',  // Your frontend deployed
-    'http://localhost:5174'                    // Your local dev server
-];
 
-const corsOptions = {
-    origin: function (origin, callback) {
-        if (!origin || whitelist.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-};
+app.use(
+    cors({
+        origin: [
+            'https://factory-project-rho.vercel.app',
+            'http://localhost:5174'
+        ],
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+        credentials: true,
+    })
+);
 
-app.use(cors(corsOptions));
 
 app.use(express.json());
 
-app.get('/', (req, res) => {
-    res.send('API is running');  // Basic message to confirm server is working
+app.get("/", (req, res) => {
+    res.status(200).send("Server is working");
+});
+app.get("/api", (req, res) => {
+    res.status(200).send("Testing base URI");
 });
 
 
