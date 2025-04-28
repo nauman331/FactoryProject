@@ -16,32 +16,29 @@ connectDB();
 // Initialize express app
 const app = express();
 
-// CORS options with multiple allowed origins
+// CORS options (Allow All Origins)
 const corsOptions = {
-    origin: [
-        'https://factory-project-rho.vercel.app',  // Frontend URL for Vercel
-        'http://localhost:5174',                    // Local frontend URL  
-    ],
+    origin: '*', // Allow all origins
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true, // Allow cookies and authorization headers
+    credentials: false // Credentials cannot be used when Access-Control-Allow-Origin is '*'
 };
 
 // Middleware
-app.use(cors(corsOptions)); // Use CORS middleware with multiple origins
+app.use(cors(corsOptions));
 app.use(express.json());
+app.options('*', cors(corsOptions)); // Handle preflight requests
 
+// Health Check Route
 app.get('/', (req, res) => {
-    res.send('API is running');  // Basic message to confirm server is working
+    res.send('API is running');
 });
 
-
-// Routes
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/users', userRoutes);
-
 
 // Server Listening
 const PORT = process.env.PORT || 5000;
