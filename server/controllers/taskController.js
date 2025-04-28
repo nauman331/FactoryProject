@@ -1,23 +1,24 @@
 const Task = require('../models/Task');
 const Job = require('../models/Job');
-const generateTaskId = require('../utils/generateTaskId');
 const cloudinary = require('../utils/cloudinary');
 const fs = require('fs');
 
+// Helper function to upload files to Cloudinary
 const uploadToCloudinary = async (filePath, folder) => {
   const res = await cloudinary.uploader.upload(filePath, {
     folder,
     resource_type: 'auto'
   });
-  fs.unlinkSync(filePath);
+  fs.unlinkSync(filePath); // Remove the file after upload
   return res.secure_url;
 };
 
-exports.createTask = async (req, res) => {
+// Create Task with client suggestions feature
+const createTask = async (req, res) => {
   try {
-    const { jobId, assignedTo, description, clientName, clientContact } = req.body;
+    const { jobId, title, description, clientName, clientContact } = req.body;
 
-    const taskId = generateTaskId();
+    // Prepare file uploads for Cloudinary
     const images = [];
     const documents = [];
     const voiceMessage = [];
@@ -29,10 +30,10 @@ exports.createTask = async (req, res) => {
       else if (file.mimetype.includes('audio')) voiceMessage.push(uploadedUrl);
     }
 
+    // Create task
     const task = await Task.create({
-      taskId,
+      title,
       job: jobId,
-      assignedTo,
       description,
       client: { name: clientName, contact: clientContact },
       images,
@@ -51,15 +52,16 @@ exports.createTask = async (req, res) => {
   }
 };
 
-exports.updateTask = async (req, res) => {
+// Update Task (no assignedTo)
+const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const { assignedTo, status, description, clientName, clientContact } = req.body;
+    const { title, status, description, clientName, clientContact } = req.body;
 
     const updatedTask = await Task.findByIdAndUpdate(
       id,
       {
-        assignedTo,
+        title,
         status,
         description,
         client: { name: clientName, contact: clientContact },
@@ -75,23 +77,12 @@ exports.updateTask = async (req, res) => {
   }
 };
 
-exports.updateTaskStatus = async (req, res) => {
-  try {
-    const { status } = req.body;
-    const task = await Task.findByIdAndUpdate(req.params.id, { status }, { new: true });
-
-    if (!task) return res.status(404).json({ message: 'Task not found' });
-
-    res.json({ message: 'Task status updated successfully', task });
-  } catch (err) {
-    res.status(500).json({ message: 'Failed to update task status', error: err.message });
-  }
-};
-
-exports.addVoiceMessage = async (req, res) => {
+// Add a new voice message as part of chat feature
+const addVoiceMessage = async (req, res) => {
   try {
     const file = req.file;
     const taskId = req.params.id;
+    const userId = req.user._id;  // Assuming user info is attached to request
 
     if (!file) return res.status(400).json({ message: 'No file uploaded' });
 
@@ -100,7 +91,11 @@ exports.addVoiceMessage = async (req, res) => {
     const task = await Task.findById(taskId);
     if (!task) return res.status(404).json({ message: 'Task not found' });
 
-    task.voiceMessage.push(uploadedUrl);
+    // Add the voice message with user reference
+    task.voiceMessage.push({
+      user: userId,
+      url: uploadedUrl
+    });
     await task.save();
 
     res.json({ message: 'Voice message added', task });
@@ -109,7 +104,8 @@ exports.addVoiceMessage = async (req, res) => {
   }
 };
 
-exports.deleteTask = async (req, res) => {
+// Delete Task
+const deleteTask = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -125,11 +121,24 @@ exports.deleteTask = async (req, res) => {
   }
 };
 
-exports.getAllTasks = async (req, res) => {
+// Get All Tasks
+const getAllTasks = async (req, res) => {
   try {
-    const tasks = await Task.find().populate('job').populate('assignedTo', 'name');
+    const tasks = await Task.find()
+      .populate('job')
+      .populate('voiceMessage.user', 'name') // Populate user data for voice messages
+      .exec();
+
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch tasks', error: err.message });
   }
+};
+
+module.exports = {
+  createTask,
+  updateTask,
+  addVoiceMessage,
+  deleteTask,
+  getAllTasks
 };

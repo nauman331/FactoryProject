@@ -4,7 +4,6 @@ const upload = require('../middleware/multer');
 const {
   createTask,
   updateTask,
-  updateTaskStatus,
   addVoiceMessage,
   deleteTask,
   getAllTasks
@@ -19,11 +18,11 @@ const fileFields = upload.array('files', 5);
 // Upload single voice file
 const voiceUpload = upload.single('voice');
 
-router.post('/', protect, checkRole(['admin', 'superadmin']), fileFields, createTask);
-router.get('/', protect, getAllTasks);
-router.put('/:id', protect, checkRole(['admin', 'superadmin']), updateTask);
-router.patch('/:id/status', protect, updateTaskStatus);
-router.post('/:id/voice', protect, voiceUpload, addVoiceMessage);
-router.delete('/:id', protect, checkRole(['admin', 'superadmin']), deleteTask);
+// Routes
+router.post('/', protect, checkRole(['admin', 'superadmin']), fileFields, createTask); // Create a new task
+router.get('/', protect, getAllTasks); // Get all tasks
+router.put('/:id', protect, checkRole(['admin', 'superadmin']), updateTask); // Update task details
+router.post('/:id/voice', protect, voiceUpload, addVoiceMessage); // Add a voice message (chat-like feature)
+router.delete('/:id', protect, checkRole(['admin', 'superadmin']), deleteTask); // Delete a task
 
 module.exports = router;
