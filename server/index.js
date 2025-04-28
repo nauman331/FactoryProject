@@ -18,10 +18,7 @@ const app = express();
 
 // CORS options with multiple allowed origins
 const corsOptions = {
-    origin: [
-        'https://factory-project-rho.vercel.app',  // Frontend URL for Vercel
-        'http://localhost:5173',                    // Local frontend URL  
-    ],
+    origin: "*",
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true, // Allow cookies and authorization headers
