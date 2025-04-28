@@ -2,39 +2,55 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+// Define the uploads directory path
+const uploadDir = path.join(__dirname, '..', 'uploads');
+
 // Ensure the upload directory exists
-const uploadDir = 'uploads/';
 if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
+  fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Temporary local storage
+// Configure multer storage
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir); // Store files in the "uploads" directory
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
   },
-  filename: function (req, file, cb) {
-    const ext = path.extname(file.originalname);
-    cb(null, `${Date.now()}-${file.fieldname}${ext}`); // Ensure unique filenames
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const uniqueName = `${Date.now()}-${file.fieldname}${ext}`;
+    cb(null, uniqueName);
   },
 });
 
-// Filter allowed file types
+// Define allowed MIME types
+const allowedMimeTypes = [
+  'image/jpeg',
+  'image/png',
+  'application/pdf',
+  'audio/mpeg',
+];
+
+// Configure file filter
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf', 'audio/mpeg'];
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true); // Accept the file
+  if (allowedMimeTypes.includes(file.mimetype)) {
+    cb(null, true);
   } else {
-    cb(new Error('Unsupported file format. Allowed formats: JPEG, PNG, PDF, MP3.'), false); // Reject the file
+    cb(
+      new multer.MulterError(
+        'LIMIT_UNEXPECTED_FILE',
+        `Unsupported file format. Allowed formats: JPEG, PNG, PDF, MP3.`
+      ),
+      false
+    );
   }
 };
 
-// Set file size limit (5MB here, adjust as needed)
+// Configure multer upload
 const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024, // Limit file size to 5MB
+    fileSize: 5 * 1024 * 1024, // 5MB
   },
 });
 
