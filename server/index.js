@@ -17,19 +17,26 @@ connectDB();
 const app = express();
 
 // CORS options with multiple allowed origins
+const whitelist = [
+    'https://factory-project-rho.vercel.app',  // Your frontend deployed
+    'http://localhost:5174'                    // Your local dev server
+];
+
 const corsOptions = {
-    origin: [
-        'https://factory-project-rho.vercel.app', 
-        'http://localhost:5173', 
-        'http://localhost:5174',        
-    ],
+    origin: function (origin, callback) {
+        if (!origin || whitelist.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true, // Allow cookies and authorization headers
+    credentials: true
 };
 
-// Middleware
-app.use(cors(corsOptions)); // Use CORS middleware with multiple origins
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
 app.get('/', (req, res) => {
