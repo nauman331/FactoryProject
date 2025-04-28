@@ -21,6 +21,6 @@ router.post('/', protect, checkRole(['admin', 'superadmin']), singleThumbnail, (
 router.get('/', protect, getJobs);
 
 // Route to update a job by ID
-router.put('/:id', protect, checkRole(['admin', 'superadmin']), singleThumbnail);
+router.put('/:id', protect, checkRole(['admin', 'superadmin']), updateJob);
 
 module.exports = router;

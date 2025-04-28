@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { backendURL } from "../utils/exports";
 
 const CreateJob = () => {
-  const [title, setTitle] = useState('');
+  const [details, setDetails] = useState('');
   const [thumbnail, setThumbnail] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -10,12 +10,12 @@ const CreateJob = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!title) {
-      return setMessage('Please enter a job title.');
+    if (!details) {
+      return setMessage('Please enter a job details.');
     }
 
     const formData = new FormData();
-    formData.append('title', title);
+    formData.append('details', details);
     if (thumbnail) {
       formData.append('thumbnail', thumbnail);
     }
@@ -39,7 +39,7 @@ const CreateJob = () => {
       }
 
       setMessage('Job created successfully!');
-      setTitle('');
+      setDetails('');
       setThumbnail(null);
     } catch (err) {
       setMessage(err.message);
@@ -63,13 +63,13 @@ const CreateJob = () => {
 
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
-                <label className="form-label fw-semibold">Job Title</label>
+                <label className="form-label fw-semibold">Job details</label>
                 <input
                   type="text"
                   className="form-control form-control-lg"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Enter job title"
+                  value={details}
+                  onChange={(e) => setDetails(e.target.value)}
+                  placeholder="Enter job details"
                   required
                 />
               </div>
