@@ -47,7 +47,7 @@ const TasksList = () => {
 
   return (
     <Container className="py-5">
-      <h2 className="text-center mb-4">All Tasks</h2>
+      <h2 className="text-center mb-4">All Products</h2>
       <Row className="g-4">
         {tasks.map((task) => (
           <Col key={task._id} xs={12} sm={6} md={4} lg={3}>
@@ -87,7 +87,7 @@ const TasksList = () => {
           >
             <div className="text-center">
               <h1 className="text-primary">+</h1>
-              <p className="text-muted">Add New Task</p>
+              <p className="text-muted">Add New Product</p>
             </div>
           </Card>
         </Col>
