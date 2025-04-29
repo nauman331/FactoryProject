@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { backendURL } from '../utils/exports';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaPen, FaPlusCircle } from 'react-icons/fa';
 
 const JobList = () => {
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -101,7 +102,10 @@ const JobList = () => {
         <div className="row g-4">
           {jobs.map((job) => (
             <div key={job._id} className="col-12 col-md-6 col-lg-4">
-              <div className="card shadow-sm h-100 border-0 position-relative">
+              <div
+                onClick={() => navigate(`/tasks/${job._id}`)}
+                style={{ cursor: "pointer" }}
+                className="card shadow-sm h-100 border-0 position-relative">
                 {/* Thumbnail Image */}
                 <div className="position-relative">
                   <img

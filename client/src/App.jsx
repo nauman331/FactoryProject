@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 
 import AppLayout from './components/AppLayout';
 import Dashboard from './pages/Dashboard1';
-import Orders from './pages/Orders';
+import Tasks from './pages/Tasks';
 import Inventory from './pages/Inventory';
 import UserManagement from './pages/UerManagement';
 import Login from './pages/Login';
@@ -40,8 +40,8 @@ function AppRoutes() {
         }
       >
         <Route index element={<Dashboard />} />
-        <Route path="orders" element={<Orders />} />
         <Route path="inventory" element={<Inventory />} />
+        <Route path="tasks/:id" element={<Tasks />} />
         <Route path="createjob" element={<CreateJob />} />
         <Route path="createtask" element={<CreateTask />} />
         <Route path="users" element={<UserManagement />} />

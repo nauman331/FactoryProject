@@ -10,7 +10,6 @@ import {
 const navItems = [
   { to: '/', label: 'Dashboard', icon: <House /> },
   { to: '/inventory', label: 'Jobs', icon: <ClipboardData /> },
-  { to: '/createtask', label: 'Tasks', icon: <BoxSeam /> },
   { to: '/users', label: 'Users', icon: <People /> },
 ];
 

@@ -18,7 +18,6 @@ const createTask = async (req, res) => {
   try {
     const { jobId, title, description, clientName, clientContact } = req.body;
 
-    // Prepare file uploads for Cloudinary
     const images = [];
     const documents = [];
     const voiceMessage = [];
@@ -30,7 +29,6 @@ const createTask = async (req, res) => {
       else if (file.mimetype.includes('audio')) voiceMessage.push(uploadedUrl);
     }
 
-    // Create task
     const task = await Task.create({
       title,
       job: jobId,
@@ -41,8 +39,10 @@ const createTask = async (req, res) => {
       voiceMessage
     });
 
-    // Link task to job
     const job = await Job.findById(jobId);
+    if (!job) {
+      return res.status(404).json({ message: 'Associated job not found' });
+    }
     job.tasks.push(task._id);
     await job.updateStatus();
 
@@ -52,7 +52,7 @@ const createTask = async (req, res) => {
   }
 };
 
-// Update Task (no assignedTo)
+// Update Task
 const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
@@ -69,7 +69,9 @@ const updateTask = async (req, res) => {
       { new: true, runValidators: true }
     );
 
-    if (!updatedTask) return res.status(404).json({ message: 'Task not found' });
+    if (!updatedTask) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
 
     res.json({ message: 'Task updated successfully', task: updatedTask });
   } catch (err) {
@@ -77,21 +79,24 @@ const updateTask = async (req, res) => {
   }
 };
 
-// Add a new voice message as part of chat feature
+// Add a new voice message
 const addVoiceMessage = async (req, res) => {
   try {
     const file = req.file;
     const taskId = req.params.id;
-    const userId = req.user._id;  // Assuming user info is attached to request
+    const userId = req.user._id; // Assuming user info is attached to request
 
-    if (!file) return res.status(400).json({ message: 'No file uploaded' });
+    if (!file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
 
     const uploadedUrl = await uploadToCloudinary(file.path, 'factory/tasks/voice');
 
     const task = await Task.findById(taskId);
-    if (!task) return res.status(404).json({ message: 'Task not found' });
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
 
-    // Add the voice message with user reference
     task.voiceMessage.push({
       user: userId,
       url: uploadedUrl
@@ -110,9 +115,10 @@ const deleteTask = async (req, res) => {
     const { id } = req.params;
 
     const task = await Task.findByIdAndDelete(id);
-    if (!task) return res.status(404).json({ message: 'Task not found' });
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
 
-    // Remove task reference from Job
     await Job.findByIdAndUpdate(task.job, { $pull: { tasks: id } });
 
     res.json({ message: 'Task deleted successfully' });
@@ -121,12 +127,12 @@ const deleteTask = async (req, res) => {
   }
 };
 
-// Get All Tasks
+// Get All Tasks (Optional: if you still need it)
 const getAllTasks = async (req, res) => {
   try {
     const tasks = await Task.find()
       .populate('job')
-      .populate('voiceMessage.user', 'name') // Populate user data for voice messages
+      .populate('voiceMessage.user', 'name')
       .exec();
 
     res.json(tasks);
@@ -135,10 +141,31 @@ const getAllTasks = async (req, res) => {
   }
 };
 
+// Get Tasks by Job ID
+const getTasksByJobId = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+
+    const tasks = await Task.find({ job: jobId })
+      .populate('job')
+      .populate('voiceMessage.user', 'name')
+      .exec();
+
+    if (!tasks || tasks.length === 0) {
+      return res.status(404).json({ message: 'No tasks found for this job' });
+    }
+
+    res.json({ message: 'Tasks fetched successfully', tasks });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch tasks by job', error: err.message });
+  }
+};
+
 module.exports = {
   createTask,
   updateTask,
   addVoiceMessage,
   deleteTask,
-  getAllTasks
+  getAllTasks,
+  getTasksByJobId
 };
