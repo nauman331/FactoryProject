@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  Form, Button, Col, Row, ListGroup, Modal, Carousel
+  Form, Button, Col, Row, ListGroup, Modal, Carousel, Card
 } from 'react-bootstrap';
 import RecordRTC from 'recordrtc';
 import { backendURL } from '../utils/exports';
@@ -138,9 +138,9 @@ function SingleTaskDetails() {
   return (
     <div className="container mt-4">
       <Row className="align-items-center mb-4">
-        <Col><h3>{task.title}</h3></Col>
+        <Col><h3 className="task-title">{task.title}</h3></Col>
         <Col xs="auto">
-          <Button variant="outline-primary" onClick={() => setShowEditModal(true)}>
+          <Button variant="outline-primary" className="edit-btn" onClick={() => setShowEditModal(true)}>
             Edit Task
           </Button>
         </Col>
@@ -148,26 +148,35 @@ function SingleTaskDetails() {
 
       <Row>
         <Col md={6}>
-          <h5>Status</h5>
-          <p>{task.status}</p>
+          <Card className="info-card">
+            <Card.Body>
+              <h5>Status</h5>
+              <p>{task.status}</p>
+            </Card.Body>
+          </Card>
         </Col>
         <Col md={6}>
-          <h5>Description</h5>
-          <p>{task.description}</p>
+          <Card className="info-card">
+            <Card.Body>
+              <h5>Description</h5>
+              <p>{task.description}</p>
+            </Card.Body>
+          </Card>
         </Col>
       </Row>
 
+      {/* Image Gallery */}
       {images.length > 0 && (
         <>
           <h4 className="mt-4">Images</h4>
-          <Carousel className="mb-4">
+          <Carousel className="image-carousel mb-4">
             {images.map((img, idx) => (
               <Carousel.Item key={idx}>
                 <img
                   className="d-block w-100"
                   src={img}
                   alt={`Slide ${idx + 1}`}
-                  style={{ maxHeight: '400px', objectFit: 'contain' }}
+                  style={{ maxHeight: '500px', objectFit: 'contain' }}
                 />
               </Carousel.Item>
             ))}
@@ -176,18 +185,18 @@ function SingleTaskDetails() {
       )}
 
       <h4 className="mt-5">Voice Messages</h4>
-      <div className="voice-message-container" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+      <div className="voice-message-container">
         {voiceMessages.length === 0 ? (
           <div>No voice messages available</div>
         ) : (
           <ListGroup>
             {voiceMessages.map((msg, idx) => (
-              <ListGroup.Item key={idx}>
+              <ListGroup.Item key={idx} className="voice-message">
                 <div>
                   <strong>{msg.user.name}</strong>
                   <small className="text-muted ms-2">{formatDate(msg.createdAt)}</small>
                 </div>
-                <audio controls className="mt-2 w-100">
+                <audio controls>
                   <source src={msg.url} type="audio/mpeg" />
                   Your browser does not support the audio element.
                 </audio>
@@ -199,7 +208,7 @@ function SingleTaskDetails() {
 
       {/* Voice Recorder */}
       <h5 className="mt-5">Record & Send Voice Message</h5>
-      <div className="border p-3 rounded bg-light">
+      <div className="recording-container">
         {!isRecording ? (
           <Button variant="primary" onClick={startRecording}>Start Recording</Button>
         ) : (
@@ -208,25 +217,21 @@ function SingleTaskDetails() {
 
         {recordingUrl && (
           <>
-            <audio controls className="mt-3 w-100" src={recordingUrl}></audio>
+            <audio controls className="mt-3" src={recordingUrl}></audio>
             <div className="mt-2">
-              <Button variant="success" onClick={uploadVoiceMessage}>Send Voice</Button>{' '}
+              <Button variant="success" onClick={uploadVoiceMessage}>Send Voice</Button>
               <Button variant="secondary" onClick={() => {
                 setRecordedBlob(null);
                 setRecordingUrl(null);
-              }}>
-                Record Again
-              </Button>
+              }}>Record Again</Button>
             </div>
           </>
         )}
       </div>
 
-      <Button variant="secondary" className="mt-4" onClick={() => navigate('/tasks')}>
-        Back to Tasks
-      </Button>
+      <Button variant="secondary" className="mt-4" onClick={() => navigate('/tasks')}>Back to Tasks</Button>
 
-      {/* Edit Modal */}
+      {/* Edit Task Modal */}
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Edit Task</Modal.Title>
