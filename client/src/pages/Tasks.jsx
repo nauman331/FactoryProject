@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Card, Button, Spinner } from 'react-bootstrap';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Container, Row, Col, Card, Spinner } from 'react-bootstrap';
 import { backendURL } from '../utils/exports';
 
 const TasksList = () => {
+  const { id } = useParams();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ const TasksList = () => {
   const fetchTasks = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${backendURL}/api/tasks`, {
+      const response = await fetch(`${backendURL}/tasks`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -34,7 +35,7 @@ const TasksList = () => {
   };
 
   const handleAddNewTask = () => {
-    navigate('/create-task');
+    navigate('/createtask', { state: { JobId: id } });
   };
 
   if (loading) {

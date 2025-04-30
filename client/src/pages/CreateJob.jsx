@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { backendURL } from "../utils/exports";
+import { useNavigate } from 'react-router-dom';
 
 const CreateJob = () => {
+  const navigate = useNavigate();
   const [details, setDetails] = useState('');
   const [thumbnail, setThumbnail] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -37,7 +39,7 @@ const CreateJob = () => {
       if (!res.ok) {
         throw new Error(data.message || 'Something went wrong');
       }
-
+      navigate(`/tasks/${data.job._id}`)
       setMessage('Job created successfully!');
       setDetails('');
       setThumbnail(null);
