@@ -28,7 +28,9 @@ const allowedMimeTypes = [
   'image/png',
   'application/pdf',
   'audio/mpeg',
+  'audio/webm', // ✅ allow webm audio format from RecordRTC
 ];
+
 
 // Configure file filter
 const fileFilter = (req, file, cb) => {

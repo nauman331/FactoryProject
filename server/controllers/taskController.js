@@ -84,7 +84,7 @@ const addVoiceMessage = async (req, res) => {
   try {
     const file = req.file;
     const taskId = req.params.id;
-    const userId = req.user._id; // Assuming user info is attached to request
+    const userId = req.user._id;
 
     if (!file) {
       return res.status(400).json({ message: 'No file uploaded' });
@@ -161,7 +161,7 @@ const getTasksByJobId = async (req, res) => {
   }
 };
 
-// ✅ Get task by ID (NEW)
+// Get task by ID 
 const getTaskById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -188,5 +188,5 @@ module.exports = {
   deleteTask,
   getAllTasks,
   getTasksByJobId,
-  getTaskById // ⬅️ newly added
+  getTaskById 
 };

@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  Form, Button, Col, Row, ListGroup, Modal, Carousel, Card
+  Button, Col, Row, Modal, Form, Tab, Tabs, Card, ListGroup, Carousel, Badge
 } from 'react-bootstrap';
 import RecordRTC from 'recordrtc';
 import { backendURL } from '../utils/exports';
+import { FaMicrophone, FaTrash, FaEdit } from 'react-icons/fa';
 
 function SingleTaskDetails() {
   const { id } = useParams();
@@ -20,22 +21,19 @@ function SingleTaskDetails() {
   const [voiceMessages, setVoiceMessages] = useState([]);
   const [images, setImages] = useState([]);
 
-  // Recorder states
-  let recorder;
   const [isRecording, setIsRecording] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [recordingUrl, setRecordingUrl] = useState(null);
+
+  const recorderRef = useRef(null);
 
   useEffect(() => {
     const fetchTaskDetails = async () => {
       const response = await fetch(`${backendURL}/tasks/${id}`, {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       });
       const data = await response.json();
-
       if (response.ok) {
         const task = data.task;
         setTask(task);
@@ -53,7 +51,6 @@ function SingleTaskDetails() {
 
   const handleUpdateTask = async () => {
     const updatedTask = { title, description, status };
-
     const response = await fetch(`${backendURL}/tasks/${id}`, {
       method: 'PUT',
       headers: {
@@ -64,7 +61,6 @@ function SingleTaskDetails() {
     });
 
     const data = await response.json();
-
     if (response.ok) {
       alert('Task updated successfully');
       setShowEditModal(false);
@@ -75,17 +71,21 @@ function SingleTaskDetails() {
   };
 
   const startRecording = () => {
-    navigator.mediaDevices
-      .getUserMedia({ audio: true })
-      .then((stream) => {
-        recorder = RecordRTC(stream, { type: 'audio' });
-        recorder.startRecording();
-        setIsRecording(true);
-      })
-      .catch(console.error);
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      const recorder = RecordRTC(stream, { type: 'audio' });
+      recorder.startRecording();
+      recorderRef.current = recorder;
+      setIsRecording(true);
+    }).catch(console.error);
   };
 
   const stopRecording = () => {
+    const recorder = recorderRef.current;
+    if (!recorder) {
+      console.error("Recorder is undefined");
+      return;
+    }
+
     recorder.stopRecording(() => {
       const audioBlob = recorder.getBlob();
       setRecordedBlob(audioBlob);
@@ -94,27 +94,23 @@ function SingleTaskDetails() {
     });
   };
 
+
   const uploadVoiceMessage = async () => {
     if (!recordedBlob) return;
-
     const formData = new FormData();
     formData.append('voice', recordedBlob);
 
     const response = await fetch(`${backendURL}/tasks/${id}/voice`, {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      },
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       body: formData
     });
 
     const data = await response.json();
-
     if (response.ok) {
-      setVoiceMessages(prev => [
-        ...prev,
-        { user: { name: 'You' }, url: data.url, createdAt: new Date().toISOString() }
-      ]);
+      setVoiceMessages(prev => [...prev, {
+        user: { name: 'You' }, url: data.url, createdAt: new Date().toISOString()
+      }]);
       setRecordedBlob(null);
       setRecordingUrl(null);
     } else {
@@ -125,111 +121,116 @@ function SingleTaskDetails() {
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+      year: 'numeric', month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit',
     });
   };
 
-  if (!task) return <div className="container mt-4">Loading...</div>;
+  if (!task) return <div className="container mt-5 text-center">Loading task details...</div>;
 
   return (
-    <div className="container mt-4">
-      <Row className="align-items-center mb-4">
-        <Col><h3 className="task-title">{task.title}</h3></Col>
+    <div className="container my-5">
+      <Row className="mb-4 align-items-center">
+        <Col>
+          <h2 className="fw-bold">{task.title}</h2>
+          <Badge bg="info" className="me-2">{task.status}</Badge>
+        </Col>
         <Col xs="auto">
-          <Button variant="outline-primary" className="edit-btn" onClick={() => setShowEditModal(true)}>
-            Edit Task
+          <Button variant="outline-primary" onClick={() => setShowEditModal(true)}>
+            <FaEdit /> Edit
           </Button>
         </Col>
       </Row>
 
       <Row>
-        <Col md={6}>
-          <Card className="info-card">
-            <Card.Body>
-              <h5>Status</h5>
-              <p>{task.status}</p>
-            </Card.Body>
-          </Card>
+        <Col md={5}>
+          {images.length > 0 ? (
+            <Carousel className="mb-4">
+              {images.map((img, idx) => (
+                <Carousel.Item key={idx}>
+                  <img
+                    className="d-block w-100"
+                    src={img}
+                    alt={`Slide ${idx + 1}`}
+                    style={{ maxHeight: '400px', objectFit: 'cover', borderRadius: '8px' }}
+                  />
+                </Carousel.Item>
+              ))}
+            </Carousel>
+          ) : (
+            <Card className="text-center mb-4">
+              <Card.Body>No Images</Card.Body>
+            </Card>
+          )}
         </Col>
-        <Col md={6}>
-          <Card className="info-card">
-            <Card.Body>
-              <h5>Description</h5>
-              <p>{task.description}</p>
-            </Card.Body>
-          </Card>
+
+        <Col md={7}>
+          <Tabs defaultActiveKey="details" className="mb-3">
+            <Tab eventKey="details" title="Details">
+              <Card className="p-3 mb-3">
+                <h5 className="fw-bold">Description</h5>
+                <p>{description}</p>
+              </Card>
+            </Tab>
+
+            <Tab eventKey="voice" title="Voice Chat">
+              <Card className="p-3 mb-3">
+                {voiceMessages.length === 0 ? (
+                  <p>No voice messages</p>
+                ) : (
+                  <ListGroup variant="flush">
+                    {voiceMessages.map((msg, idx) => (
+                      <ListGroup.Item key={idx} className="d-flex flex-column mb-2 rounded shadow-sm">
+                        <div className="d-flex justify-content-between">
+                          <strong>{msg.user.name}</strong>
+                          <small className="text-muted">{formatDate(msg.createdAt)}</small>
+                        </div>
+                        <audio controls className="mt-2 w-100">
+                          <source src={msg.url} type="audio/mpeg" />
+                        </audio>
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                )}
+
+                <div className="mt-4 border-top pt-3">
+                  {!isRecording ? (
+                    <Button variant="primary" onClick={startRecording}>
+                      <FaMicrophone /> Start Recording
+                    </Button>
+                  ) : (
+                    <Button variant="danger" onClick={stopRecording}>Stop Recording</Button>
+                  )}
+
+                  {recordingUrl && (
+                    <div className="mt-3">
+                      <audio controls className="w-100" src={recordingUrl}></audio>
+                      <div className="mt-2 d-flex gap-2">
+                        <Button variant="success" onClick={uploadVoiceMessage}>Send</Button>
+                        <Button variant="secondary" onClick={() => {
+                          setRecordedBlob(null);
+                          setRecordingUrl(null);
+                        }}>Re-record</Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            </Tab>
+
+            <Tab eventKey="more" title="More Info">
+              <Card className="p-3">
+                <p><strong>Task ID:</strong> {task._id}</p>
+                {/* Add more fields here if needed */}
+              </Card>
+            </Tab>
+          </Tabs>
         </Col>
       </Row>
 
-      {/* Image Gallery */}
-      {images.length > 0 && (
-        <>
-          <h4 className="mt-4">Images</h4>
-          <Carousel className="image-carousel mb-4">
-            {images.map((img, idx) => (
-              <Carousel.Item key={idx}>
-                <img
-                  className="d-block w-100"
-                  src={img}
-                  alt={`Slide ${idx + 1}`}
-                  style={{ maxHeight: '500px', objectFit: 'contain' }}
-                />
-              </Carousel.Item>
-            ))}
-          </Carousel>
-        </>
-      )}
-
-      <h4 className="mt-5">Voice Messages</h4>
-      <div className="voice-message-container">
-        {voiceMessages.length === 0 ? (
-          <div>No voice messages available</div>
-        ) : (
-          <ListGroup>
-            {voiceMessages.map((msg, idx) => (
-              <ListGroup.Item key={idx} className="voice-message">
-                <div>
-                  <strong>{msg.user.name}</strong>
-                  <small className="text-muted ms-2">{formatDate(msg.createdAt)}</small>
-                </div>
-                <audio controls>
-                  <source src={msg.url} type="audio/mpeg" />
-                  Your browser does not support the audio element.
-                </audio>
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-        )}
+      <div className="mt-4 text-end">
+        <Button variant="secondary" onClick={() => navigate('/tasks')}>Back to Task List</Button>
       </div>
-
-      {/* Voice Recorder */}
-      <h5 className="mt-5">Record & Send Voice Message</h5>
-      <div className="recording-container">
-        {!isRecording ? (
-          <Button variant="primary" onClick={startRecording}>Start Recording</Button>
-        ) : (
-          <Button variant="danger" onClick={stopRecording}>Stop Recording</Button>
-        )}
-
-        {recordingUrl && (
-          <>
-            <audio controls className="mt-3" src={recordingUrl}></audio>
-            <div className="mt-2">
-              <Button variant="success" onClick={uploadVoiceMessage}>Send Voice</Button>
-              <Button variant="secondary" onClick={() => {
-                setRecordedBlob(null);
-                setRecordingUrl(null);
-              }}>Record Again</Button>
-            </div>
-          </>
-        )}
-      </div>
-
-      <Button variant="secondary" className="mt-4" onClick={() => navigate('/tasks')}>Back to Tasks</Button>
 
       {/* Edit Task Modal */}
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
@@ -240,20 +241,12 @@ function SingleTaskDetails() {
           <Form>
             <Form.Group className="mb-3">
               <Form.Label>Title</Form.Label>
-              <Form.Control
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-              />
+              <Form.Control value={title} onChange={(e) => setTitle(e.target.value)} />
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Status</Form.Label>
-              <Form.Select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                required
-              >
+              <Form.Select value={status} onChange={(e) => setStatus(e.target.value)}>
                 <option value="">Select Status</option>
                 <option value="Pending">Pending</option>
                 <option value="In Progress">In Progress</option>
@@ -263,13 +256,8 @@ function SingleTaskDetails() {
 
             <Form.Group className="mb-3">
               <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-              />
+              <Form.Control as="textarea" rows={3} value={description}
+                onChange={(e) => setDescription(e.target.value)} />
             </Form.Group>
 
             <Button variant="primary" onClick={handleUpdateTask}>Save Changes</Button>
