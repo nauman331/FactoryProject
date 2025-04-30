@@ -127,7 +127,7 @@ const deleteTask = async (req, res) => {
   }
 };
 
-// Get All Tasks (Optional: if you still need it)
+// Get all tasks
 const getAllTasks = async (req, res) => {
   try {
     const tasks = await Task.find()
@@ -141,7 +141,7 @@ const getAllTasks = async (req, res) => {
   }
 };
 
-// Get Tasks by Job ID
+// Get tasks by job ID
 const getTasksByJobId = async (req, res) => {
   try {
     const { jobId } = req.params;
@@ -161,11 +161,32 @@ const getTasksByJobId = async (req, res) => {
   }
 };
 
+// ✅ Get task by ID (NEW)
+const getTaskById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const task = await Task.findById(id)
+      .populate('job')
+      .populate('voiceMessage.user', 'name')
+      .exec();
+
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    res.json({ message: 'Task fetched successfully', task });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch task', error: err.message });
+  }
+};
+
 module.exports = {
   createTask,
   updateTask,
   addVoiceMessage,
   deleteTask,
   getAllTasks,
-  getTasksByJobId
+  getTasksByJobId,
+  getTaskById // ⬅️ newly added
 };

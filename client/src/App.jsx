@@ -9,6 +9,7 @@ import UserManagement from './pages/UerManagement';
 import Login from './pages/Login';
 import CreateJob from './pages/CreateJob';
 import CreateTask from './pages/CreateTask';
+import TaskDetails from './pages/TaskDetails';
 
 import './styles/theme.css';
 
@@ -42,6 +43,7 @@ function AppRoutes() {
         <Route index element={<Dashboard />} />
         <Route path="inventory" element={<Inventory />} />
         <Route path="tasks/:id" element={<Tasks />} />
+        <Route path="/task/:id" element={<TaskDetails />} />
         <Route path="createjob" element={<CreateJob />} />
         <Route path="createtask" element={<CreateTask />} />
         <Route path="users" element={<UserManagement />} />

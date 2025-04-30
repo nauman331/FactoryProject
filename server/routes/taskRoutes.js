@@ -7,24 +7,26 @@ const {
   addVoiceMessage,
   deleteTask,
   getAllTasks,
-  getTasksByJobId
+  getTasksByJobId,
+  getTaskById 
 } = require('../controllers/taskController');
 
 const protect = require('../middleware/authMiddleware');
 const checkRole = require('../middleware/roleMiddleware');
 
-// Upload multiple files
+// Upload multiple files (image/pdf/audio) for task creation
 const fileFields = upload.array('files', 5);
 
-// Upload single voice file
+// Upload single voice message for chat
 const voiceUpload = upload.single('voice');
 
 // Routes
-router.post('/', protect, checkRole(['admin', 'superadmin']), fileFields, createTask); // Create a new task
-router.get('/', protect, getAllTasks); // Get all tasks
-router.get('/job/:jobId', protect, getTasksByJobId); // <-- NEW: Get tasks by Job ID
-router.put('/:id', protect, checkRole(['admin', 'superadmin']), updateTask); // Update task details
-router.post('/:id/voice', protect, voiceUpload, addVoiceMessage); // Add a voice message (chat-like feature)
-router.delete('/:id', protect, checkRole(['admin', 'superadmin']), deleteTask); // Delete a task
+router.post('/', protect, checkRole(['admin', 'superadmin']), fileFields, createTask);         // Create a new task
+router.get('/', protect, getAllTasks);                                                        // Get all tasks
+router.get('/job/:jobId', protect, getTasksByJobId);                                          // Get tasks by job ID
+router.get('/:id', protect, getTaskById);                                                     // Get task by ID
+router.put('/:id', protect, checkRole(['admin', 'superadmin']), updateTask);                  // Update a task
+router.post('/:id/voice', protect, voiceUpload, addVoiceMessage);                             // Add voice message to task
+router.delete('/:id', protect, checkRole(['admin', 'superadmin']), deleteTask);               // Delete a task
 
 module.exports = router;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Container, Row, Col, Card, Spinner } from 'react-bootstrap';
+import { Container, Row, Col, Card, Spinner, Badge } from 'react-bootstrap';
 import { backendURL } from '../utils/exports';
 
 const TasksList = () => {
@@ -38,6 +38,18 @@ const TasksList = () => {
     navigate('/createtask', { state: { JobId: id } });
   };
 
+  const getStatusVariant = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'completed':
+        return 'success';
+      case 'in progress':
+        return 'warning';
+      case 'pending':
+      default:
+        return 'secondary';
+    }
+  };
+
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '70vh' }}>
@@ -54,19 +66,27 @@ const TasksList = () => {
           <Col key={task._id} xs={12} sm={6} md={4} lg={3}>
             <Card
               onClick={() => handleTaskClick(task._id)}
-              className="task-card h-100 shadow-sm"
+              className="task-card h-100 shadow-sm border-0"
               style={{ cursor: 'pointer', transition: 'transform 0.3s' }}
               onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.03)')}
               onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
             >
+              {task.images && task.images.length > 0 && (
+                <Card.Img
+                  variant="top"
+                  src={task.images[0]}
+                  alt="Task Image"
+                  style={{ height: '180px', objectFit: 'cover' }}
+                />
+              )}
               <Card.Body>
                 <Card.Title className="text-primary">{task.title}</Card.Title>
                 <Card.Text className="text-muted" style={{ fontSize: '0.9rem' }}>
                   {task.description?.substring(0, 80)}...
                 </Card.Text>
               </Card.Body>
-              <Card.Footer className="bg-white border-0">
-                <small className="text-muted">Status: {task.status || 'Pending'}</small>
+              <Card.Footer className="bg-white border-0 d-flex justify-content-between align-items-center">
+                <Badge bg={getStatusVariant(task.status)}>{task.status || 'Pending'}</Badge>
               </Card.Footer>
             </Card>
           </Col>
