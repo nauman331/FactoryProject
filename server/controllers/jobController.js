@@ -56,8 +56,26 @@ const getJobs = async (req, res) => {
   }
 };
 
+// controllers/jobController.js
+
+const getClientSuggestions = async (req, res) => {
+  try {
+    const { search } = req.query;
+
+    const regex = new RegExp(search, 'i'); // case-insensitive partial match
+    const clients = await Job.find({ clientname: regex }).distinct('clientname');
+
+    res.json({ clients });
+  } catch (err) {
+    console.error('Failed to fetch client suggestions:', err);
+    res.status(500).json({ message: 'Failed to fetch suggestions' });
+  }
+};
+
+
 module.exports = {
   createJob,
   getJobs,
   updateJob,
+  getClientSuggestions
 };

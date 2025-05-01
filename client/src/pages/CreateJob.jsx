@@ -1,13 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { backendURL } from '../utils/exports';
 import { useNavigate } from 'react-router-dom';
 
 const CreateJob = () => {
   const [clientname, setClientname] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
   const [message, setMessage] = useState('');
-  const [variant, setVariant] = useState(''); // success | danger
+  const [variant, setVariant] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (!clientname.trim()) return setSuggestions([]);
+
+      try {
+        const res = await fetch(`${backendURL}/jobs/suggestions?search=${clientname}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        const data = await res.json();
+        setSuggestions(data.clients || []);
+      } catch (err) {
+        console.error('Failed to fetch suggestions:', err);
+        setSuggestions([]);
+      }
+    };
+
+    const debounce = setTimeout(fetchSuggestions, 300); // debounce to avoid flooding API
+    return () => clearTimeout(debounce);
+  }, [clientname]);
+
+  const handleSelectSuggestion = (suggestion) => {
+    setClientname(suggestion);
+    setSuggestions([]);
+  };
 
   const handleCreateJob = async (e) => {
     e.preventDefault();
@@ -33,7 +61,7 @@ const CreateJob = () => {
 
       setVariant('success');
       setMessage('Job created successfully!');
-      setTimeout(() => navigate(`/tasks/${data?.job?._id}`), 100); // Redirect after 1.2s
+      setTimeout(() => navigate(`/tasks/${data?.job?._id}`), 100);
     } catch (err) {
       setVariant('danger');
       setMessage(err.message);
@@ -54,7 +82,7 @@ const CreateJob = () => {
             </div>
           )}
 
-          <form onSubmit={handleCreateJob} className="border p-4 rounded shadow-sm bg-white">
+          <form onSubmit={handleCreateJob} className="border p-4 rounded shadow-sm bg-white position-relative">
             <div className="mb-3">
               <label htmlFor="clientname" className="form-label fw-semibold">Client Name</label>
               <input
@@ -64,7 +92,22 @@ const CreateJob = () => {
                 value={clientname}
                 onChange={(e) => setClientname(e.target.value)}
                 placeholder="Enter client name"
+                autoComplete="off"
               />
+              {suggestions.length > 0 && (
+                <ul className="list-group position-absolute w-100 z-3" style={{ top: '100%', left: 0 }}>
+                  {suggestions.map((sug, index) => (
+                    <li
+                      key={index}
+                      className="list-group-item list-group-item-action"
+                      onClick={() => handleSelectSuggestion(sug)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {sug}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
 
             <button

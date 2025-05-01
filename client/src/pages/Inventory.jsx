@@ -12,11 +12,13 @@ const JobList = () => {
   const [updatedClientName, setUpdatedClientName] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
   // New states for sorting and filtering
   const [statusFilter, setStatusFilter] = useState('all'); // 'pending', 'completed', 'all'
   const [clientFilter, setClientFilter] = useState('');
-  
+
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
@@ -28,7 +30,7 @@ const JobList = () => {
         });
         const data = await res.json();
         if (res.ok) {
-          setJobs(data.jobs); 
+          setJobs(data.jobs);
           setFilteredJobs(data.jobs); // Initially show all jobs
         } else {
           setMessage('Failed to load jobs.');
@@ -101,7 +103,7 @@ const JobList = () => {
 
       {/* Filters */}
       <div className="d-flex justify-content-between mb-4">
-        <select 
+        <select
           className="form-select w-auto"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
@@ -110,7 +112,7 @@ const JobList = () => {
           <option value="pending">Pending</option>
           <option value="completed">Completed</option>
         </select>
-        <input 
+        <input
           type="text"
           className="form-control w-auto"
           placeholder="Filter by Client Name"
@@ -132,17 +134,20 @@ const JobList = () => {
               <div className="card border-0 shadow-sm h-100" style={{ cursor: 'pointer' }} onClick={() => navigate(`/tasks/${job._id}`)}>
                 <div className="bg-primary text-white text-center p-4 position-relative rounded-top">
                   <FaBriefcase size={30} />
-                  <button
-                    className="btn btn-sm btn-light text-primary rounded-circle position-absolute top-0 end-0 m-2"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedJob(job);
-                      setUpdatedClientName(job.clientname);
-                      setModalVisible(true);
-                    }}
-                  >
-                    <FaPen size={14} />
-                  </button>
+                  {
+                    (user?.role === "admin" || user?.role === "superadmin") &&
+                    <button
+                      className="btn btn-sm btn-light text-primary rounded-circle position-absolute top-0 end-0 m-2"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedJob(job);
+                        setUpdatedClientName(job.clientname);
+                        setModalVisible(true);
+                      }}
+                    >
+                      <FaPen size={14} />
+                    </button>
+                  }
                   <h5 className="mt-2 mb-0 fw-bold">{job.JobId}</h5>
                 </div>
                 <div className="card-body">
