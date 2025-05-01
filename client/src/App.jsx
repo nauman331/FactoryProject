@@ -13,7 +13,7 @@ import TaskDetails from './pages/TaskDetails';
 
 import './styles/theme.css';
 
-// PrivateRoute now checks authReady before rendering
+// PrivateRoute checks authReady before rendering
 const PrivateRoute = ({ children }) => {
   const { user, authReady } = useAuth();
 
@@ -31,7 +31,10 @@ const PrivateRoute = ({ children }) => {
 function AppRoutes() {
   return (
     <Routes>
+      {/* Public Route */}
       <Route path="/login" element={<Login />} />
+
+      {/* Protected Routes */}
       <Route
         path="/"
         element={
@@ -40,16 +43,17 @@ function AppRoutes() {
           </PrivateRoute>
         }
       >
-        <Route index element={<Dashboard />} />
-        <Route path="inventory" element={<Inventory />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route index element={<Inventory />} />
         <Route path="tasks/:id" element={<Tasks />} />
-        <Route path="/task/:id" element={<TaskDetails />} />
+        <Route path="task/:id" element={<TaskDetails />} />
         <Route path="createjob" element={<CreateJob />} />
         <Route path="createtask" element={<CreateTask />} />
         <Route path="users" element={<UserManagement />} />
       </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* Catch-all: redirect to login */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }

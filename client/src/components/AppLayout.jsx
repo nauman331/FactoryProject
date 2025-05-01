@@ -8,6 +8,9 @@ function AppLayout() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
+  // Parse user from localStorage if it exists
+  const user = JSON.parse(localStorage.getItem("user"));
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -21,7 +24,10 @@ function AppLayout() {
     <div className="d-flex flex-column min-vh-100">
       <Navbar toggleSidebar={() => setShowSidebar(!showSidebar)} />
       <div className="d-flex flex-grow-1">
-        <Sidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
+        {
+          user && (user.role === "admin" || user.role === "superadmin") &&
+          <Sidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
+        }
         <main
           className="flex-grow-1 p-3"
           style={{

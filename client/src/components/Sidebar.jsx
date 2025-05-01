@@ -3,15 +3,9 @@ import { Nav } from 'react-bootstrap';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
-  House, People, BoxSeam, ClipboardData,
+  House, People, ClipboardData,
   DoorOpen
 } from 'react-bootstrap-icons';
-
-const navItems = [
-  { to: '/', label: 'Dashboard', icon: <House /> },
-  { to: '/inventory', label: 'Jobs', icon: <ClipboardData /> },
-  { to: '/users', label: 'Users', icon: <People /> },
-];
 
 function Sidebar({ showSidebar, setShowSidebar }) {
   const location = useLocation();
@@ -19,6 +13,29 @@ function Sidebar({ showSidebar, setShowSidebar }) {
   const { logout } = useAuth();
   const [hovered, setHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  // Parse user from localStorage
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  // Dynamically build the nav items based on the user role
+  const navItems = [
+    { to: '/', label: 'Jobs', icon: <ClipboardData /> },
+  ];
+
+  if (user && (user.role === "admin" || user.role === "superadmin")) {
+    navItems.unshift({
+      to: '/dashboard',
+      label: 'Dashboard',
+      icon: <House />
+    });
+  }
+  if (user && user.role === "superadmin") {
+    navItems.push({
+      to: '/users',
+      label: 'Users',
+      icon: <People />
+    });
+  }
 
   useEffect(() => {
     const handleResize = () => {
