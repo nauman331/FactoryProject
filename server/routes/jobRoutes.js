@@ -3,19 +3,10 @@ const router = express.Router();
 const { createJob, getJobs, updateJob } = require('../controllers/jobController');
 const protect = require('../middleware/authMiddleware');
 const checkRole = require('../middleware/roleMiddleware');
-const upload = require('../middleware/multer'); // <-- Add multer
 
-// Multer setup to accept only 1 thumbnail image
-const singleThumbnail = upload.single('thumbnail'); // This should match the field name in your form
 
 // Route to create a job
-router.post('/', protect, checkRole(['admin', 'superadmin']), singleThumbnail, (req, res, next) => {
-  if (req.file) {
-    return createJob(req, res);
-  } else {
-    res.status(400).json({ message: 'Thumbnail image is required' });
-  }
-});
+router.post('/', protect, checkRole(['admin', 'superadmin']), createJob);
 
 // Route to get all jobs
 router.get('/', protect, getJobs);

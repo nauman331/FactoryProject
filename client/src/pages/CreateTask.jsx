@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Button, Container, Row, Col, Card, Alert, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 import { Trash } from 'react-bootstrap-icons';
-import { backendURL } from "../utils/exports"
+import { backendURL } from "../utils/exports";
 
 function CreateTask() {
   const location = useLocation();
@@ -11,8 +11,9 @@ function CreateTask() {
   const [form, setForm] = useState({
     title: '',
     description: '',
-    clientName: '',
-    clientContact: '',
+    color: '',
+    size: '',
+    quantity: '',
     status: '',
   });
 
@@ -75,7 +76,14 @@ function CreateTask() {
       const result = await response.json();
       if (response.ok) {
         setMessage({ type: 'success', text: 'Task created successfully!' });
-        setForm({ title: '', description: '', clientName: '', clientContact: '', status: '' });
+        setForm({
+          title: '',
+          description: '',
+          color: '',
+          size: '',
+          quantity: '',
+          status: '',
+        });
         setImages([]);
         setPdfs([]);
       } else {
@@ -88,8 +96,8 @@ function CreateTask() {
 
   return (
     <Container className="py-5">
-      <Card className="shadow-lg p-4 border-0">
-        <h3 className="text-center mb-4 text-primary">Create New Task</h3>
+      <Card className="shadow-lg border-0 p-4">
+        <h3 className="text-center mb-4 text-primary">Add New Product</h3>
 
         {message && (
           <Alert variant={message.type} onClose={() => setMessage(null)} dismissible>
@@ -104,7 +112,7 @@ function CreateTask() {
                 <Form.Label>Title</Form.Label>
                 <Form.Control
                   name="title"
-                  placeholder="Enter task title"
+                  placeholder="Enter Product Title"
                   value={form.title}
                   onChange={handleInputChange}
                   required
@@ -129,7 +137,7 @@ function CreateTask() {
             <Form.Control
               as="textarea"
               rows={4}
-              placeholder="Enter task description"
+              placeholder="Enter Product Details"
               name="description"
               value={form.description}
               onChange={handleInputChange}
@@ -138,25 +146,38 @@ function CreateTask() {
           </Form.Group>
 
           <Row className="mb-3">
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group>
-                <Form.Label>Client Name</Form.Label>
+                <Form.Label>Color</Form.Label>
                 <Form.Control
-                  name="clientName"
-                  placeholder="Enter client name"
-                  value={form.clientName}
+                  name="color"
+                  placeholder="e.g. Red"
+                  value={form.color}
                   onChange={handleInputChange}
                   required
                 />
               </Form.Group>
             </Col>
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group>
-                <Form.Label>Client Contact</Form.Label>
+                <Form.Label>Size</Form.Label>
                 <Form.Control
-                  name="clientContact"
-                  placeholder="Enter client contact"
-                  value={form.clientContact}
+                  name="size"
+                  placeholder="e.g. Medium"
+                  value={form.size}
+                  onChange={handleInputChange}
+                  required
+                />
+              </Form.Group>
+            </Col>
+            <Col md={4}>
+              <Form.Group>
+                <Form.Label>Quantity</Form.Label>
+                <Form.Control
+                  name="quantity"
+                  type="number"
+                  placeholder="Enter quantity"
+                  value={form.quantity}
                   onChange={handleInputChange}
                   required
                 />
@@ -184,7 +205,6 @@ function CreateTask() {
               />
             </div>
 
-            {/* Image Preview */}
             {images.length > 0 && (
               <Row className="mt-3 g-3">
                 {images.map((img, index) => (
@@ -212,7 +232,6 @@ function CreateTask() {
               </Row>
             )}
 
-            {/* PDF Preview */}
             {pdfs.length > 0 && (
               <Row className="mt-3">
                 {pdfs.map((pdf, index) => (
@@ -233,7 +252,7 @@ function CreateTask() {
 
           <div className="d-grid">
             <Button type="submit" size="lg" variant="primary">
-              Submit Task
+              Add Product
             </Button>
           </div>
         </Form>

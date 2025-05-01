@@ -32,7 +32,7 @@ const TasksList = () => {
       setLoading(false);
     }
   };
-  
+
   const handleTaskClick = (taskId) => {
     navigate(`/task/${taskId}`);
   };
@@ -70,27 +70,43 @@ const TasksList = () => {
             <Card
               onClick={() => handleTaskClick(task._id)}
               className="task-card h-100 shadow-sm border-0"
-              style={{ cursor: 'pointer', transition: 'transform 0.3s' }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.03)')}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+              style={{
+                cursor: 'pointer',
+                transition: 'transform 0.3s, box-shadow 0.3s',
+                borderRadius: '10px',
+                overflow: 'hidden',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.05)';
+                e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
             >
               {task.images && task.images.length > 0 && (
                 <Card.Img
                   variant="top"
                   src={task.images[0]}
-                  alt="Task Image"
-                  style={{ height: '180px', objectFit: 'cover' }}
+                  alt="Product Image"
+                  style={{
+                    height: '180px',
+                    objectFit: 'cover',
+                    borderTopLeftRadius: '10px',
+                    borderTopRightRadius: '10px',
+                  }}
                 />
               )}
-              <Card.Body>
+              <Card.Body className="d-flex flex-column">
                 <Card.Title className="text-primary">{task.title}</Card.Title>
                 <Card.Text className="text-muted" style={{ fontSize: '0.9rem' }}>
                   {task.description?.substring(0, 80)}...
                 </Card.Text>
+                <div className="mt-auto">
+                  <Badge bg={getStatusVariant(task.status)}>{task.status || 'Pending'}</Badge>
+                </div>
               </Card.Body>
-              <Card.Footer className="bg-white border-0 d-flex justify-content-between align-items-center">
-                <Badge bg={getStatusVariant(task.status)}>{task.status || 'Pending'}</Badge>
-              </Card.Footer>
             </Card>
           </Col>
         ))}
@@ -103,7 +119,8 @@ const TasksList = () => {
               cursor: 'pointer',
               border: '2px dashed #0d6efd',
               background: '#f8f9fa',
-              transition: 'background 0.3s'
+              borderRadius: '10px',
+              transition: 'background 0.3s',
             }}
             onClick={handleAddNewTask}
             onMouseEnter={(e) => (e.currentTarget.style.background = '#e2e6ea')}
