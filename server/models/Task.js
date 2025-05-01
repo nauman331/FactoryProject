@@ -2,13 +2,12 @@ const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema({
   title: { type: String, required: true },
+  color: { type: String },
+  size: { type: String },
+  quantity: { type: String },
   job: { type: mongoose.Schema.Types.ObjectId, ref: 'Job' },
   status: { type: String, enum: ['pending', 'in-progress', 'completed'], default: 'pending' },
   description: String,
-  client: {
-    name: String,
-    contact: String
-  },
   images: [String],       // Cloudinary URLs
   documents: [String],    // Cloudinary URLs
   voiceMessage: [{        // Array of voice messages for chat-like feature

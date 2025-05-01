@@ -2,8 +2,7 @@ const mongoose = require('mongoose');
 
 const jobSchema = new mongoose.Schema({
   JobId: { type: String, unique: true },
-  details: { type: String, required: true },
-  thumbnail: { type: String }, // Cloudinary URL
+  clientname: { type: String },
   tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }], // Reference to Tasks
   status: { type: String, enum: ['pending', 'completed'], default: 'pending' },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

@@ -16,7 +16,7 @@ const uploadToCloudinary = async (filePath, folder) => {
 // Create Task with client suggestions feature
 const createTask = async (req, res) => {
   try {
-    const { jobId, title, description, clientName, clientContact } = req.body;
+    const { jobId, title, description, color, size, quantity } = req.body;
 
     const images = [];
     const documents = [];
@@ -33,7 +33,9 @@ const createTask = async (req, res) => {
       title,
       job: jobId,
       description,
-      client: { name: clientName, contact: clientContact },
+      color, 
+      size, 
+      quantity,
       images,
       documents,
       voiceMessage
@@ -56,7 +58,7 @@ const createTask = async (req, res) => {
 const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, status, description, clientName, clientContact } = req.body;
+    const { title, status, description, color, size, quantity } = req.body;
 
     const updatedTask = await Task.findByIdAndUpdate(
       id,
@@ -64,7 +66,9 @@ const updateTask = async (req, res) => {
         title,
         status,
         description,
-        client: { name: clientName, contact: clientContact },
+        color, 
+        size, 
+        quantity
       },
       { new: true, runValidators: true }
     );

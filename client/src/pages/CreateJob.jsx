@@ -1,49 +1,41 @@
 import React, { useState } from 'react';
-import { backendURL } from "../utils/exports";
+import { backendURL } from '../utils/exports';
 import { useNavigate } from 'react-router-dom';
 
 const CreateJob = () => {
-  const navigate = useNavigate();
-  const [details, setDetails] = useState('');
-  const [thumbnail, setThumbnail] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [clientname, setClientname] = useState('');
   const [message, setMessage] = useState('');
+  const [variant, setVariant] = useState(''); // success | danger
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleCreateJob = async (e) => {
     e.preventDefault();
-
-    if (!details) {
-      return setMessage('Please enter a job details.');
-    }
-
-    const formData = new FormData();
-    formData.append('details', details);
-    if (thumbnail) {
-      formData.append('thumbnail', thumbnail);
+    if (!clientname.trim()) {
+      setVariant('danger');
+      setMessage('Client name is required');
+      return;
     }
 
     try {
       setLoading(true);
-      setMessage('');
-
       const res = await fetch(`${backendURL}/jobs`, {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
-        body: formData,
+        body: JSON.stringify({ clientname }),
       });
 
       const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Job creation failed.');
 
-      if (!res.ok) {
-        throw new Error(data.message || 'Something went wrong');
-      }
-      navigate(`/tasks/${data.job._id}`)
+      setVariant('success');
       setMessage('Job created successfully!');
-      setDetails('');
-      setThumbnail(null);
+      setTimeout(() => navigate('/jobs'), 1200); // Redirect after 1.2s
     } catch (err) {
+      setVariant('danger');
       setMessage(err.message);
     } finally {
       setLoading(false);
@@ -53,46 +45,43 @@ const CreateJob = () => {
   return (
     <div className="container my-5">
       <div className="row justify-content-center">
-        <div className="col-md-8 col-lg-6">
-          <div className="card shadow rounded-4 p-4 border-0">
-            <h2 className="text-center mb-4 fw-bold text-primary">Create Job</h2>
+        <div className="col-md-6">
+          <h2 className="mb-4 text-center fw-bold text-primary">Create New Job</h2>
 
-            {message && (
-              <div className={`alert ${message.includes('successfully') ? 'alert-success' : 'alert-danger'}`} role="alert">
-                {message}
-              </div>
-            )}
+          {message && (
+            <div className={`alert alert-${variant}`} role="alert">
+              {message}
+            </div>
+          )}
 
-            <form onSubmit={handleSubmit}>
-              <div className="mb-3">
-                <label className="form-label fw-semibold">Job details</label>
-                <input
-                  type="text"
-                  className="form-control form-control-lg"
-                  value={details}
-                  onChange={(e) => setDetails(e.target.value)}
-                  placeholder="Enter job details"
-                  required
-                />
-              </div>
+          <form onSubmit={handleCreateJob} className="border p-4 rounded shadow-sm bg-white">
+            <div className="mb-3">
+              <label htmlFor="clientname" className="form-label fw-semibold">Client Name</label>
+              <input
+                type="text"
+                id="clientname"
+                className="form-control"
+                value={clientname}
+                onChange={(e) => setClientname(e.target.value)}
+                placeholder="Enter client name"
+              />
+            </div>
 
-              <div className="mb-3">
-                <label className="form-label fw-semibold">Upload Thumbnail</label>
-                <input
-                  type="file"
-                  className="form-control"
-                  accept="image/*"
-                  onChange={(e) => setThumbnail(e.target.files[0])}
-                />
-              </div>
-
-              <div className="d-grid">
-                <button type="submit" className="btn btn-primary btn-lg" disabled={loading}>
-                  {loading ? 'Creating...' : 'Create Job'}
-                </button>
-              </div>
-            </form>
-          </div>
+            <button
+              type="submit"
+              className="btn btn-primary w-100 fw-semibold"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" />
+                  Creating...
+                </>
+              ) : (
+                'Create Job'
+              )}
+            </button>
+          </form>
         </div>
       </div>
     </div>
