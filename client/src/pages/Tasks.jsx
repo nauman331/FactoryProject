@@ -16,20 +16,23 @@ const TasksList = () => {
   const fetchTasks = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${backendURL}/tasks`, {
+      const response = await fetch(`${backendURL}/tasks/job/${id}`, {
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
       const data = await response.json();
-      setTasks(data);
+      console.log('Fetched tasks data:', data); // Helpful debug
+      setTasks(Array.isArray(data) ? data : data.tasks || []);
       setLoading(false);
     } catch (error) {
       console.error('Failed to fetch tasks:', error);
+      setTasks([]); // Ensure tasks is always an array
       setLoading(false);
     }
   };
-
+  
   const handleTaskClick = (taskId) => {
     navigate(`/task/${taskId}`);
   };
@@ -62,7 +65,7 @@ const TasksList = () => {
     <Container className="py-5">
       <h2 className="text-center mb-4">All Products</h2>
       <Row className="g-4">
-        {tasks.map((task) => (
+        {tasks?.map((task) => (
           <Col key={task._id} xs={12} sm={6} md={4} lg={3}>
             <Card
               onClick={() => handleTaskClick(task._id)}
