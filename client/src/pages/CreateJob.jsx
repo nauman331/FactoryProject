@@ -33,7 +33,7 @@ const CreateJob = () => {
 
       setVariant('success');
       setMessage('Job created successfully!');
-      setTimeout(() => navigate('/jobs'), 1200); // Redirect after 1.2s
+      setTimeout(() => navigate(`/tasks/${data?.job?._id}`), 100); // Redirect after 1.2s
     } catch (err) {
       setVariant('danger');
       setMessage(err.message);

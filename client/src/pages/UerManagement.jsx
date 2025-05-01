@@ -139,6 +139,7 @@ const UserManagement = () => {
                   <th>Name</th>
                   <th>Email</th>
                   <th>Role</th>
+                  <th>Password</th> {/* Add Password column */}
                   <th style={{ width: '100px' }}>Action</th>
                 </tr>
               </thead>
@@ -149,6 +150,7 @@ const UserManagement = () => {
                       <td>{u.name}</td>
                       <td>{u.email}</td>
                       <td>{u.role}</td>
+                      <td>{u.password}</td> {/* Display password here */}
                       <td>
                         <button
                           className="btn btn-sm btn-danger"
@@ -161,11 +163,12 @@ const UserManagement = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" className="text-center">No users found</td>
+                    <td colSpan="5" className="text-center">No users found</td>
                   </tr>
                 )}
               </tbody>
             </table>
+
           </div>
 
           {/* Mobile Cards */}
@@ -177,6 +180,7 @@ const UserManagement = () => {
                     <h5 className="card-title">{u.name}</h5>
                     <p className="card-text mb-1"><strong>Email:</strong> {u.email}</p>
                     <p className="card-text mb-3"><strong>Role:</strong> {u.role}</p>
+                    <p className="card-text mb-3"><strong>Password:</strong> {u.password}</p> {/* Display password here */}
                     <button
                       className="btn btn-sm btn-danger"
                       onClick={() => handleDelete(u._id)}
@@ -190,6 +194,7 @@ const UserManagement = () => {
               <div className="text-center">No users found</div>
             )}
           </div>
+
         </>
       )}
     </div>

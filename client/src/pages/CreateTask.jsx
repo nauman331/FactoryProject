@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Form, Button, Container, Row, Col, Card, Alert, Tooltip, OverlayTrigger } from 'react-bootstrap';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Trash } from 'react-bootstrap-icons';
 import { backendURL } from "../utils/exports";
 
 function CreateTask() {
   const location = useLocation();
+  const navigate = useNavigate()
   const JobId = location?.state?.JobId || '';
 
   const [form, setForm] = useState({
@@ -86,6 +87,7 @@ function CreateTask() {
         });
         setImages([]);
         setPdfs([]);
+        navigate(`/tasks/${result?.task?.job}`)
       } else {
         setMessage({ type: 'danger', text: result.message });
       }

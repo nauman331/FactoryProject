@@ -5,7 +5,7 @@ const protect = require('../middleware/authMiddleware');
 const checkRole = require('../middleware/roleMiddleware');
 
 router.get('/', protect, checkRole(['superadmin']), async (req, res) => {
-  const users = await User.find({ role: { $ne: 'superadmin' } }).select('-password');
+  const users = await User.find({ role: { $ne: 'superadmin' } });
   res.json(users);
 });
 

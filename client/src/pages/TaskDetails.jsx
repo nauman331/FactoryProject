@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  Button, Col, Row, Modal, Form, Tab, Tabs, Card, ListGroup, Carousel, Badge
+  Button, Col, Row, Modal, Form, Tab, Tabs, Card, ListGroup, Carousel, Badge, Alert
 } from 'react-bootstrap';
 import RecordRTC from 'recordrtc';
 import { backendURL } from '../utils/exports';
-import { FaMicrophone, FaTrash, FaEdit } from 'react-icons/fa';
+import { FaMicrophone, FaTrash, FaEdit, FaDownload } from 'react-icons/fa';
 
 function SingleTaskDetails() {
   const { id } = useParams();
@@ -17,9 +17,13 @@ function SingleTaskDetails() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('');
+  const [color, setColor] = useState('');
+  const [size, setSize] = useState('');
+  const [quantity, setQuantity] = useState('');
 
   const [voiceMessages, setVoiceMessages] = useState([]);
   const [images, setImages] = useState([]);
+  const [documents, setDocuments] = useState([]);
 
   const [isRecording, setIsRecording] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState(null);
@@ -40,8 +44,12 @@ function SingleTaskDetails() {
         setTitle(task.title);
         setDescription(task.description);
         setStatus(task.status);
+        setColor(task.color);
+        setSize(task.size);
+        setQuantity(task.quantity);
         setVoiceMessages(task.voiceMessage || []);
         setImages(task.images || []);
+        setDocuments(task.documents || []);
       } else {
         alert(data.message || 'Error fetching task details');
       }
@@ -50,7 +58,7 @@ function SingleTaskDetails() {
   }, [id]);
 
   const handleUpdateTask = async () => {
-    const updatedTask = { title, description, status };
+    const updatedTask = { title, description, status, color, size, quantity };
     const response = await fetch(`${backendURL}/tasks/${id}`, {
       method: 'PUT',
       headers: {
@@ -64,7 +72,7 @@ function SingleTaskDetails() {
     if (response.ok) {
       alert('Task updated successfully');
       setShowEditModal(false);
-      setTask({ ...task, title, description, status });
+      setTask({ ...task, title, description, status, color, size, quantity });
     } else {
       alert(data.message || 'Failed to update task');
     }
@@ -93,7 +101,6 @@ function SingleTaskDetails() {
       setIsRecording(false);
     });
   };
-
 
   const uploadVoiceMessage = async () => {
     if (!recordedBlob) return;
@@ -126,6 +133,10 @@ function SingleTaskDetails() {
     });
   };
 
+  const handleImageError = (e) => {
+    e.target.style.display = 'none';  // Hide the broken image in carousel
+  };
+
   if (!task) return <div className="container mt-5 text-center">Loading task details...</div>;
 
   return (
@@ -153,6 +164,7 @@ function SingleTaskDetails() {
                     src={img}
                     alt={`Slide ${idx + 1}`}
                     style={{ maxHeight: '400px', objectFit: 'cover', borderRadius: '8px' }}
+                    onError={handleImageError}  // Error handling
                   />
                 </Carousel.Item>
               ))}
@@ -170,6 +182,11 @@ function SingleTaskDetails() {
               <Card className="p-3 mb-3">
                 <h5 className="fw-bold">Description</h5>
                 <p>{description}</p>
+                <p><strong>Color:</strong> {color}</p>
+                <p><strong>Size:</strong> {size}</p>
+                <p><strong>Quantity:</strong> {quantity}</p>
+                <p><strong>Job Client:</strong> {task.job.clientname}</p>
+                <p><strong>Job ID:</strong> {task.job.JobId}</p>
               </Card>
             </Tab>
 
@@ -221,7 +238,36 @@ function SingleTaskDetails() {
             <Tab eventKey="more" title="More Info">
               <Card className="p-3">
                 <p><strong>Task ID:</strong> {task._id}</p>
-                {/* Add more fields here if needed */}
+                <p><strong>Created At:</strong> {formatDate(task.createdAt)}</p>
+                <p><strong>Last Updated:</strong> {formatDate(task.updatedAt)}</p>
+
+                <h5>Documents</h5>
+                {documents.length > 0 ? (
+                  <ListGroup variant="flush">
+                    {documents.map((doc, idx) => (
+                      <ListGroup.Item key={idx} className="d-flex justify-content-between align-items-center">
+                        <a href={doc} target="_blank" download>Document {idx + 1}</a>
+                        <Button variant="outline-primary" href={doc} download><FaDownload /> Download</Button>
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                ) : (
+                  <Alert variant="warning">No documents available</Alert>
+                )}
+
+                <h5>Images</h5>
+                {images.length > 0 ? (
+                  <ListGroup variant="flush">
+                    {images.map((img, idx) => (
+                      <ListGroup.Item key={idx} className="d-flex justify-content-between align-items-center">
+                        <img src={img} alt={`Image ${idx + 1}`} style={{ width: '100px', height: 'auto' }} />
+                        <Button variant="outline-primary" href={img} download><FaDownload /> Download</Button>
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                ) : (
+                  <Alert variant="warning">No images available</Alert>
+                )}
               </Card>
             </Tab>
           </Tabs>
@@ -241,28 +287,73 @@ function SingleTaskDetails() {
           <Form>
             <Form.Group className="mb-3">
               <Form.Label>Title</Form.Label>
-              <Form.Control value={title} onChange={(e) => setTitle(e.target.value)} />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Status</Form.Label>
-              <Form.Select value={status} onChange={(e) => setStatus(e.target.value)}>
-                <option value="">Select Status</option>
-                <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-              </Form.Select>
+              <Form.Control
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Description</Form.Label>
-              <Form.Control as="textarea" rows={3} value={description}
-                onChange={(e) => setDescription(e.target.value)} />
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
             </Form.Group>
 
-            <Button variant="primary" onClick={handleUpdateTask}>Save Changes</Button>
+            <Form.Group className="mb-3">
+              <Form.Label>Status</Form.Label>
+              <Form.Control
+                as="select"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+              >
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </Form.Control>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Color</Form.Label>
+              <Form.Control
+                type="text"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Size</Form.Label>
+              <Form.Control
+                type="text"
+                value={size}
+                onChange={(e) => setSize(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Quantity</Form.Label>
+              <Form.Control
+                type="number"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+              />
+            </Form.Group>
+
           </Form>
         </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleUpdateTask}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
       </Modal>
     </div>
   );
