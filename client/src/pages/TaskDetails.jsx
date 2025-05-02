@@ -29,6 +29,9 @@ function SingleTaskDetails() {
   const [recordedBlob, setRecordedBlob] = useState(null);
   const [recordingUrl, setRecordingUrl] = useState(null);
 
+  const user = JSON.parse(localStorage.getItem("user"));
+  const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
+
   const recorderRef = useRef(null);
 
   useEffect(() => {
@@ -147,9 +150,28 @@ function SingleTaskDetails() {
           <Badge bg="info" className="me-2">{task.status}</Badge>
         </Col>
         <Col xs="auto">
-          <Button variant="outline-primary" onClick={() => setShowEditModal(true)}>
-            <FaEdit /> Edit
-          </Button>
+          {
+            isAdmin ?
+              <Button variant="outline-primary" onClick={() => setShowEditModal(true)}>
+                <FaEdit /> Edit
+              </Button>
+              :
+              <Form className='d-flex align-items-center justify-content-center gap-3'>
+                <Form.Group>
+                  <Form.Control
+                    as="select"
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}>
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                  </Form.Control>
+                </Form.Group>
+                <Button variant="primary" onClick={handleUpdateTask}>
+                  Save Changes
+                </Button>
+              </Form>
+          }
         </Col>
       </Row>
 

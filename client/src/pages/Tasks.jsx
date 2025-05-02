@@ -8,6 +8,8 @@ const TasksList = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
+  const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
 
   useEffect(() => {
     fetchTasks();
@@ -111,27 +113,28 @@ const TasksList = () => {
           </Col>
         ))}
 
-        {/* Add New Task Box */}
-        <Col xs={12} sm={6} md={4} lg={3}>
-          <Card
-            className="d-flex align-items-center justify-content-center h-100 add-task-card shadow-sm"
-            style={{
-              cursor: 'pointer',
-              border: '2px dashed #0d6efd',
-              background: '#f8f9fa',
-              borderRadius: '10px',
-              transition: 'background 0.3s',
-            }}
-            onClick={handleAddNewTask}
-            onMouseEnter={(e) => (e.currentTarget.style.background = '#e2e6ea')}
-            onMouseLeave={(e) => (e.currentTarget.style.background = '#f8f9fa')}
-          >
-            <div className="text-center">
-              <h1 className="text-primary">+</h1>
-              <p className="text-muted">Add New Product</p>
-            </div>
-          </Card>
-        </Col>
+        {isAdmin &&
+          <Col xs={12} sm={6} md={4} lg={3}>
+            <Card
+              className="d-flex align-items-center justify-content-center h-100 add-task-card shadow-sm"
+              style={{
+                cursor: 'pointer',
+                border: '2px dashed #0d6efd',
+                background: '#f8f9fa',
+                borderRadius: '10px',
+                transition: 'background 0.3s',
+              }}
+              onClick={handleAddNewTask}
+              onMouseEnter={(e) => (e.currentTarget.style.background = '#e2e6ea')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = '#f8f9fa')}
+            >
+              <div className="text-center">
+                <h1 className="text-primary">+</h1>
+                <p className="text-muted">Add New Product</p>
+              </div>
+            </Card>
+          </Col>
+        }
       </Row>
     </Container>
   );
