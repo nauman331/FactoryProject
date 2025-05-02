@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
-import Footer from './Footer';
 
 function AppLayout() {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -38,7 +37,6 @@ function AppLayout() {
           <Outlet />
         </main>
       </div>
-      <Footer />
     </div>
   );
 }
