@@ -5,7 +5,7 @@ import {
 } from 'react-bootstrap';
 import RecordRTC from 'recordrtc';
 import { backendURL } from '../utils/exports';
-import { FaMicrophone, FaTrash, FaEdit, FaDownload } from 'react-icons/fa';
+import { FaMicrophone, FaEdit, FaDownload } from 'react-icons/fa';
 
 function SingleTaskDetails() {
   const { id } = useParams();
@@ -146,8 +146,8 @@ function SingleTaskDetails() {
     <div className="container my-5">
       <Row className="mb-4 align-items-center">
         <Col>
-          <h2 className="fw-bold">{task.title}</h2>
-          <Badge bg="info" className="me-2">{task.status}</Badge>
+          <h2 className="fw-bold d-flex align-items-center gap-3 flex-wrap">{task.title} <h5 className='m-0 p-0'><Badge bg="info">{task.status}</Badge></h5>
+          </h2>
         </Col>
         <Col xs="auto">
           {
@@ -162,9 +162,9 @@ function SingleTaskDetails() {
                     as="select"
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}>
-                    <option value="Pending">Pending</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
+                    <option value="pending">Pending ⌄</option>
+                    <option value="in progress">In Progress ⌄</option>
+                    <option value="completed">Completed ⌄</option>
                   </Form.Control>
                 </Form.Group>
                 <Button variant="primary" onClick={handleUpdateTask}>
@@ -333,9 +333,9 @@ function SingleTaskDetails() {
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
               >
-                <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
+                <option value="pending">Pending</option>
+                <option value="in progress">In Progress</option>
+                <option value="completed">Completed</option>
               </Form.Control>
             </Form.Group>
 
