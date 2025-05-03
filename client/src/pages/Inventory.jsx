@@ -33,12 +33,12 @@ const JobList = () => {
         const data = await res.json();
         if (res.ok) {
           let jobsList = data.jobs;
-    
+
           // Only filter by createdBy for admins
           if (onlyAdmin) {
             jobsList = jobsList.filter(job => job.createdBy?.email === user.email);
           }
-    
+
           setJobs(jobsList);
         } else {
           setMessage('Failed to load jobs.');
@@ -49,7 +49,7 @@ const JobList = () => {
         setLoading(false);
       }
     };
-    
+
 
     fetchJobs();
   }, [onlyAdmin, isAdmin, user?.email]);

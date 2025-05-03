@@ -48,7 +48,7 @@ function CreateTask() {
   const handleInputChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-  
+
 
   const handleDrop = e => {
     e.preventDefault();
@@ -87,7 +87,7 @@ function CreateTask() {
     Object.entries(form).forEach(([key, value]) => formData.append(key, value));
     images.forEach(img => formData.append('files', img));
     pdfs.forEach(pdf => formData.append('files', pdf));
-  
+
     try {
       const response = await fetch(`${backendURL}/tasks`, {
         method: 'POST',
@@ -96,7 +96,7 @@ function CreateTask() {
         },
         body: formData,
       });
-  
+
       const result = await response.json();
       if (response.ok) {
         setMessage({ type: 'success', text: 'Task created successfully!' });
@@ -119,7 +119,7 @@ function CreateTask() {
       setMessage({ type: 'danger', text: 'Something went wrong. Please try again.' });
     }
   };
-  
+
 
   if (loading) {
     return (
