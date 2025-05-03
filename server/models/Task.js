@@ -6,7 +6,7 @@ const taskSchema = new mongoose.Schema({
   size: { type: String },
   quantity: { type: String },
   job: { type: mongoose.Schema.Types.ObjectId, ref: 'Job' },
-
+  category: {type: mongoose.Schema.Types.ObjectId, ref: 'Category'},
   status: { type: String, 
     enum: ['pending',
      'mockup-development', 
