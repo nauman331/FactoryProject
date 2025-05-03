@@ -4,7 +4,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   House, People, ClipboardData,
-  DoorOpen
+  DoorOpen,
+  Boxes
 } from 'react-bootstrap-icons';
 
 function Sidebar({ showSidebar, setShowSidebar }) {
@@ -31,11 +32,19 @@ function Sidebar({ showSidebar, setShowSidebar }) {
   }
   if (user && user.role === "superadmin") {
     navItems.push({
+      to: '/categories',
+      label: 'Categories',
+      icon: <Boxes />
+    });
+  }
+  if (user && user.role === "superadmin") {
+    navItems.push({
       to: '/users',
       label: 'Users',
       icon: <People />
     });
   }
+
 
   useEffect(() => {
     const handleResize = () => {

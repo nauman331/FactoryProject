@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import CreateJob from './pages/CreateJob';
 import CreateTask from './pages/CreateTask';
 import TaskDetails from './pages/TaskDetails';
+import CategoryManager from './pages/CategoryManager';
 
 import './styles/theme.css';
 
@@ -49,6 +50,7 @@ function AppRoutes() {
         <Route path="task/:id" element={<TaskDetails />} />
         <Route path="createjob" element={<CreateJob />} />
         <Route path="createtask" element={<CreateTask />} />
+        <Route path="categories" element={<CategoryManager />} />
         <Route path="users" element={<UserManagement />} />
       </Route>
 

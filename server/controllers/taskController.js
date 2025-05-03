@@ -23,7 +23,7 @@ const checkAndUpdateJobStatus = async (jobId) => {
 // Create Task with client suggestions feature
 const createTask = async (req, res) => {
   try {
-    const { jobId, title, description, color, size, quantity, status } = req.body;
+    const { jobId, title, description, color, size, quantity, status, category } = req.body;
 
     const images = [];
     const documents = [];
@@ -46,6 +46,7 @@ const createTask = async (req, res) => {
       quantity,
       images,
       documents,
+      category,
       voiceMessage
     });
 
@@ -66,11 +67,11 @@ const createTask = async (req, res) => {
 const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, status, description, color, size, quantity } = req.body;
+    const { title, status, description, color, size, quantity, category  } = req.body;
 
     const updatedTask = await Task.findByIdAndUpdate(
       id,
-      { title, status, description, color, size, quantity },
+      { title, status, description, color, size, quantity, category  },
       { new: true, runValidators: true }
     );
 
