@@ -1,39 +1,68 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Container, Row, Col, Card, Spinner, Badge } from 'react-bootstrap';
+import { Container, Row, Col, Card, Spinner, Badge, Form } from 'react-bootstrap';
 import { backendURL } from '../utils/exports';
 
 const TasksList = () => {
   const { id } = useParams();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
+  const [filteredTasks, setFilteredTasks] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
 
   useEffect(() => {
     fetchTasks();
+    fetchCategories();
   }, []);
+  useEffect(() => {
+    fetchTasks();
+  }, [selectedCategory]);
+
+  const fetchCategories = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${backendURL}/category`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await response.json();
+      setCategories(data.categories || []);
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+    }
+  };
 
   const fetchTasks = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${backendURL}/tasks/job/${id}`, {
+      const url = selectedCategory
+        ? `${backendURL}/tasks/category/${selectedCategory}`
+        : `${backendURL}/tasks/job/${id}`;
+  
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
+  
       const data = await response.json();
-      console.log('Fetched tasks data:', data); // Helpful debug
-      setTasks(Array.isArray(data) ? data : data.tasks || []);
-      setLoading(false);
+      const result = Array.isArray(data) ? data : data.tasks || [];
+      setTasks(result);
+      setFilteredTasks(result); // ✅ updated
     } catch (error) {
       console.error('Failed to fetch tasks:', error);
-      setTasks([]); // Ensure tasks is always an array
+      setTasks([]);
+      setFilteredTasks([]);
+    } finally {
       setLoading(false);
     }
   };
+  
+
 
   const handleTaskClick = (taskId) => {
     navigate(`/task/${taskId}`);
@@ -66,8 +95,18 @@ const TasksList = () => {
   return (
     <Container className="py-5">
       <h2 className="text-center mb-4">All Products</h2>
+      <Form.Group className="mb-4">
+        <Form.Label>Filter by Category</Form.Label>
+        <Form.Select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
+          <option value="">All Categories</option>
+          {categories.map((cat) => (
+            <option key={cat._id} value={cat._id}>{cat.categoryname}</option>
+          ))}
+        </Form.Select>
+      </Form.Group>
+
       <Row className="g-4">
-        {tasks?.map((task) => (
+        {filteredTasks?.map((task) => (
           <Col key={task._id} xs={12} sm={6} md={4} lg={3}>
             <Card
               onClick={() => handleTaskClick(task._id)}
