@@ -67,11 +67,11 @@ const createTask = async (req, res) => {
 const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, status, description, color, size, quantity, category  } = req.body;
+    const { title, status, description, color, size, quantity, category } = req.body;
 
     const updatedTask = await Task.findByIdAndUpdate(
       id,
-      { title, status, description, color, size, quantity, category  },
+      { title, status, description, color, size, quantity, category },
       { new: true, runValidators: true }
     );
 
@@ -176,7 +176,7 @@ const getTaskById = async (req, res) => {
     const { id } = req.params;
 
     const task = await Task.findById(id)
-      .populate('job')
+      .populate('job').populate('category')
       .populate('voiceMessage.user', 'name')
       .exec();
 

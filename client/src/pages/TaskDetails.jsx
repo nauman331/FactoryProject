@@ -237,6 +237,7 @@ function SingleTaskDetails() {
                 <p><strong>Color:</strong> {color}</p>
                 <p><strong>Size:</strong> {size}</p>
                 <p><strong>Quantity:</strong> {quantity}</p>
+                <p><strong>Category:</strong> {task?.category?.categoryname}</p>
                 <p><strong>Job Client:</strong> {task.job.clientname}</p>
                 <p><strong>Job ID:</strong> {task.job.JobId}</p>
               </Card>

@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Row, Col, Container } from 'react-bootstrap';
 import {
   BoxSeam,
   PersonWorkspace,
   Archive,
-  Truck,
 } from 'react-bootstrap-icons';
 import {
   LineChart,
@@ -18,64 +17,90 @@ import {
   CartesianGrid,
   Legend,
 } from 'recharts';
+import { backendURL } from '../utils/exports';
 
 function Dashboard1() {
-  const cards = [
-    { title: 'Total Orders', value: 152, color: 'primary', icon: <BoxSeam size={40} /> },
-    { title: 'Active Workers', value: 28, color: 'success', icon: <PersonWorkspace size={40} /> },
-    { title: 'Inventory Items', value: 320, color: 'info', icon: <Archive size={40} /> },
-    { title: 'Pending Deliveries', value: 7, color: 'danger', icon: <Truck size={40} /> },
-  ];
+  const [dashboardData, setDashboardData] = useState({
+    completedJobsCount: 0,
+    pendingJobsCount: 0,
+    totalUsersCount: 0,
+    jobsPerDay: [],
+    workersPerDay: [],
+  });
 
-  const data = [
-    { name: 'Mon', orders: 120, workers: 22 },
-    { name: 'Tue', orders: 132, workers: 25 },
-    { name: 'Wed', orders: 101, workers: 20 },
-    { name: 'Thu', orders: 156, workers: 28 },
-    { name: 'Fri', orders: 142, workers: 26 },
-    { name: 'Sat', orders: 162, workers: 30 },
-    { name: 'Sun', orders: 151, workers: 29 },
-  ];
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await fetch(`${backendURL}/dashboard`);
+        if (response.ok) {
+          const data = await response.json();
+          setDashboardData(data);
+        } else {
+          console.error('Error fetching dashboard data:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  const { completedJobsCount, pendingJobsCount, totalUsersCount, jobsPerDay, workersPerDay } = dashboardData;
 
   return (
     <Container fluid className="p-4">
-      <h2 className="mb-4 fw-bold text-dark">📊 Dashboard Overview</h2>
+      <h2 className="mb-4 fw-bold text-dark">📊 Dashboard</h2>
 
-      <Row xs={1} md={2} xl={4} className="g-4 mb-4">
-        {cards.map((card, index) => (
-          <Col key={index}>
-            <Card
-              bg={card.color}
-              text="white"
-              className="shadow-sm border-0"
-              style={{ borderRadius: '1rem', minHeight: '130px' }}
-            >
-              <Card.Body className="d-flex justify-content-between align-items-center">
-                <div>
-                  <Card.Title className="fw-bold fs-6">{card.title}</Card.Title>
-                  <Card.Text className="fs-3">{card.value.toLocaleString()}</Card.Text>
-                </div>
-                <div className="opacity-75">{card.icon}</div>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
+      <Row xs={1} md={2} xl={3} className="g-4 mb-4">
+        <Col>
+          <Card bg="primary" text="white" className="shadow-sm border-0" style={{ borderRadius: '1rem', minHeight: '130px' }}>
+            <Card.Body className="d-flex justify-content-between align-items-center">
+              <div>
+                <Card.Title className="fw-bold fs-6">Pending Jobs</Card.Title>
+                <Card.Text className="fs-3">{pendingJobsCount.toLocaleString()}</Card.Text>
+              </div>
+              <div className="opacity-75"><Archive size={40} /></div>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col>
+          <Card bg="success" text="white" className="shadow-sm border-0" style={{ borderRadius: '1rem', minHeight: '130px' }}>
+            <Card.Body className="d-flex justify-content-between align-items-center">
+              <div>
+                <Card.Title className="fw-bold fs-6">Completed Jobs</Card.Title>
+                <Card.Text className="fs-3">{completedJobsCount.toLocaleString()}</Card.Text>
+              </div>
+              <div className="opacity-75"><BoxSeam size={40} /></div>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col>
+          <Card bg="info" text="white" className="shadow-sm border-0" style={{ borderRadius: '1rem', minHeight: '130px' }}>
+            <Card.Body className="d-flex justify-content-between align-items-center">
+              <div>
+                <Card.Title className="fw-bold fs-6">Total Users</Card.Title>
+                <Card.Text className="fs-3">{totalUsersCount.toLocaleString()}</Card.Text>
+              </div>
+              <div className="opacity-75"><PersonWorkspace size={40} /></div>
+            </Card.Body>
+          </Card>
+        </Col>
       </Row>
 
       <Row className="g-4">
         <Col md={12} lg={6}>
           <Card className="shadow-sm border-0" style={{ borderRadius: '1rem' }}>
             <Card.Body>
-              <h5 className="fw-bold mb-3">📈 Weekly Orders & Workers Trend (Line)</h5>
+              <h5 className="fw-bold mb-3">📈 Jobs Per Day</h5>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={data}>
+                <LineChart data={jobsPerDay}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
+                  <XAxis dataKey="_id" />
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="orders" stroke="#0d6efd" strokeWidth={3} activeDot={{ r: 8 }} />
-                  <Line type="monotone" dataKey="workers" stroke="#198754" strokeWidth={3} />
+                  <Line type="monotone" dataKey="totalOrders" stroke="#0d6efd" strokeWidth={3} activeDot={{ r: 8 }} />
                 </LineChart>
               </ResponsiveContainer>
             </Card.Body>
@@ -85,16 +110,15 @@ function Dashboard1() {
         <Col md={12} lg={6}>
           <Card className="shadow-sm border-0" style={{ borderRadius: '1rem' }}>
             <Card.Body>
-              <h5 className="fw-bold mb-3">📊 Orders & Workers Overview (Bar)</h5>
+              <h5 className="fw-bold mb-3">📊 Workers Per Day</h5>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={data}>
+                <BarChart data={workersPerDay}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
+                  <XAxis dataKey="_id" />
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="orders" fill="#0d6efd" barSize={30} />
-                  <Bar dataKey="workers" fill="#198754" barSize={30} />
+                  <Bar dataKey="totalWorkers" fill="#198754" barSize={30} />
                 </BarChart>
               </ResponsiveContainer>
             </Card.Body>

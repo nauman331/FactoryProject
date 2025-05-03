@@ -9,7 +9,8 @@ const authRoutes = require('./routes/authRoutes');
 const jobRoutes = require('./routes/jobRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const userRoutes = require('./routes/userRoutes');
-const categoryRoutes = require("./routes/categoryRoutes")
+const categoryRoutes = require("./routes/categoryRoutes");
+const dashBoardRoutes = require("./routes/dashboardRoutes")
 
 // Connect to database
 connectDB();
@@ -50,6 +51,7 @@ app.use('/api/jobs', jobRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/category', categoryRoutes);
+app.use('/api/dashboard', dashBoardRoutes);
 
 // Server Listening
 const PORT = process.env.PORT || 5000;
