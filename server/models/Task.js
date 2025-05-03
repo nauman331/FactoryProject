@@ -6,7 +6,21 @@ const taskSchema = new mongoose.Schema({
   size: { type: String },
   quantity: { type: String },
   job: { type: mongoose.Schema.Types.ObjectId, ref: 'Job' },
-  status: { type: String, enum: ['pending', 'in-progress', 'completed'], default: 'pending' },
+
+  status: { type: String, 
+    enum: ['pending',
+     'mockup-development', 
+    'pattern-development', 
+    'material-sourcing',
+    'printing',
+    'embossing',
+    'dye-making', 
+    'rough-sample',
+    'cutting',
+    'stitching',
+    'completed'], 
+    default: 'pending' },
+
   description: String,
   images: [String],       // Cloudinary URLs
   documents: [String],    // Cloudinary URLs

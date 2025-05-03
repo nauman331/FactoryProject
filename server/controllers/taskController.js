@@ -23,7 +23,7 @@ const checkAndUpdateJobStatus = async (jobId) => {
 // Create Task with client suggestions feature
 const createTask = async (req, res) => {
   try {
-    const { jobId, title, description, color, size, quantity } = req.body;
+    const { jobId, title, description, color, size, quantity, status } = req.body;
 
     const images = [];
     const documents = [];
@@ -42,6 +42,7 @@ const createTask = async (req, res) => {
       description,
       color,
       size,
+      status,
       quantity,
       images,
       documents,

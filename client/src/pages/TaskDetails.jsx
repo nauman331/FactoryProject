@@ -183,9 +183,18 @@ function SingleTaskDetails() {
                     as="select"
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}>
-                    <option value="pending">Pending ⌄</option>
-                    <option value="in progress">In Progress ⌄</option>
-                    <option value="completed">Completed ⌄</option>
+                          <option value="">Select status</option>
+                  <option value="pending">Pending</option>
+                  <option value="mockup-development">Mockup Development</option>
+                  <option value="pattern-development">Pattern Development</option>
+                  <option value="material-sourcing">Material Sourcing</option>
+                  <option value="printing">Printing</option>
+                  <option value="embossing">Embossing</option>
+                  <option value="dye-making">Dye-Making</option>
+                  <option value="rough-sample">Rough Sample</option>
+                  <option value="cutting">Cutting</option>
+                  <option value="stitching">Stitching</option>
+                  <option value="completed">Completed</option>
                   </Form.Control>
                 </Form.Group>
                 <Button variant="primary" onClick={handleUpdateTask}>
@@ -311,11 +320,11 @@ function SingleTaskDetails() {
                       <ListGroup.Item key={idx} className="d-flex justify-content-between align-items-center">
                         <img src={img} alt={`Image ${idx + 1}`} style={{ width: '100px', height: 'auto' }} />
                         <Button
-  variant="outline-primary"
-  onClick={() => handleFileDownload(img, `image-${idx + 1}`)}
->
-  <FaDownload /> Download
-</Button>
+                          variant="outline-primary"
+                          onClick={() => handleFileDownload(img, `image-${idx + 1}`)}
+                        >
+                          <FaDownload /> Download
+                        </Button>
                       </ListGroup.Item>
                     ))}
                   </ListGroup>
@@ -327,10 +336,6 @@ function SingleTaskDetails() {
           </Tabs>
         </Col>
       </Row>
-
-      <div className="mt-4 text-end">
-        <Button variant="secondary" onClick={() => navigate('/tasks')}>Back to Task List</Button>
-      </div>
 
       {/* Edit Task Modal */}
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
@@ -365,8 +370,17 @@ function SingleTaskDetails() {
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
               >
+                <option value="">Select status</option>
                 <option value="pending">Pending</option>
-                <option value="in progress">In Progress</option>
+                <option value="mockup-development">Mockup Development</option>
+                <option value="pattern-development">Pattern Development</option>
+                <option value="material-sourcing">Material Sourcing</option>
+                <option value="printing">Printing</option>
+                <option value="embossing">Embossing</option>
+                <option value="dye-making">Dye-Making</option>
+                <option value="rough-sample">Rough Sample</option>
+                <option value="cutting">Cutting</option>
+                <option value="stitching">Stitching</option>
                 <option value="completed">Completed</option>
               </Form.Control>
             </Form.Group>
