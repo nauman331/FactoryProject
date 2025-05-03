@@ -217,6 +217,28 @@ const getTaskById = async (req, res) => {
   }
 };
 
+// Filter tasks by category ID
+const filterByCategory = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+
+    const tasks = await Task.find({ category: categoryId })
+      .populate('job')
+      .populate('category')
+      .populate('voiceMessage.user', 'name')
+      .exec();
+
+    if (!tasks || tasks.length === 0) {
+      return res.status(404).json({ message: 'No tasks found for this category' });
+    }
+
+    res.json({ message: 'Tasks fetched successfully by category', tasks });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch tasks by category', error: err.message });
+  }
+};
+
+
 module.exports = {
   createTask,
   updateTask,
@@ -224,5 +246,6 @@ module.exports = {
   deleteTask,
   getAllTasks,
   getTasksByJobId,
-  getTaskById
+  getTaskById,
+  filterByCategory
 };

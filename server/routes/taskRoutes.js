@@ -8,7 +8,8 @@ const {
   deleteTask,
   getAllTasks,
   getTasksByJobId,
-  getTaskById
+  getTaskById,
+  filterByCategory
 } = require('../controllers/taskController');
 
 const protect = require('../middleware/authMiddleware');
@@ -24,8 +25,9 @@ const voiceUpload = upload.single('voice');
 router.post('/', protect, checkRole(['admin', 'superadmin']), fileFields, createTask);         // Create a new task
 router.get('/', protect, getAllTasks);                                                        // Get all tasks
 router.get('/job/:jobId', protect, getTasksByJobId);                                          // Get tasks by job ID
+router.get('/category/:categoryId', protect, filterByCategory);                               // Filter tasks by category
 router.get('/:id', protect, getTaskById);                                                     // Get task by ID
-router.put('/:id', protect, updateTask);                  // Update a task
+router.put('/:id', protect, updateTask);                                                      // Update a task
 router.post('/:id/voice', protect, voiceUpload, addVoiceMessage);                             // Add voice message to task
 router.delete('/:id', protect, checkRole(['admin', 'superadmin']), deleteTask);               // Delete a task
 
