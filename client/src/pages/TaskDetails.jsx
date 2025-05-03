@@ -1,18 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   Button, Col, Row, Modal, Form, Tab, Tabs, Card, ListGroup, Carousel, Badge, Alert
 } from 'react-bootstrap';
 import RecordRTC from 'recordrtc';
 import { backendURL } from '../utils/exports';
-import { FaMicrophone, FaEdit, FaDownload } from 'react-icons/fa';
+import { FaMicrophone, FaEdit, FaDownload, FaHistory } from 'react-icons/fa';
 
 function SingleTaskDetails() {
   const { id } = useParams();
-  const navigate = useNavigate();
 
   const [task, setTask] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+
+  const [history, setHistory] = useState([]);
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -44,6 +45,7 @@ function SingleTaskDetails() {
       if (response.ok) {
         const task = data.task;
         setTask(task);
+        setHistory(task.history || [])
         setTitle(task.title);
         setDescription(task.description);
         setStatus(task.status);
@@ -159,6 +161,45 @@ function SingleTaskDetails() {
 
   const handleImageError = (e) => {
     e.target.style.display = 'none';  // Hide the broken image in carousel
+  };
+
+  const renderTimeline = () => {
+    if (history.length === 0) {
+      return <Alert variant="info">No history available</Alert>;
+    }
+
+    return (
+      <ListGroup variant="flush">
+        {task?.history && task.history.length > 0 ? (
+          <Card className="p-3 mt-4">
+            <h5 className="fw-bold">History / Timeline</h5>
+            <ListGroup variant="flush">
+              {task.history.map((historyItem, idx) => (
+                <ListGroup.Item key={idx} className="d-flex justify-content-between align-items-center">
+                  <div>
+                  <div className="text-muted">
+                    <small>{formatDate(historyItem.updatedAt)}</small>
+                  </div>
+                    <ul>
+                      <li><strong>Title:</strong> {historyItem.previousState.title}</li>
+                      <li><strong>Description:</strong> {historyItem.previousState.description}</li>
+                      <li><strong>Color:</strong> {historyItem.previousState.color}</li>
+                      <li><strong>Size:</strong> {historyItem.previousState.size}</li>
+                      <li><strong>Quantity:</strong> {historyItem.previousState.quantity}</li>
+                      <li><strong>Status:</strong> {historyItem.previousState.status}</li>
+                    </ul>
+                  </div>
+                </ListGroup.Item>
+              ))}
+            </ListGroup>
+          </Card>
+        ) : (
+          <Card className="p-3 mt-4">
+            <p>No history available.</p>
+          </Card>
+        )}
+      </ListGroup>
+    );
   };
 
   if (!task) return <div className="container mt-5 text-center">Loading task details...</div>;
@@ -285,6 +326,13 @@ function SingleTaskDetails() {
                     </div>
                   )}
                 </div>
+              </Card>
+            </Tab>
+
+            <Tab eventKey="history" title={<><FaHistory /> Timeline</>}>
+              <Card className="p-3 mb-3">
+                <h5 className="fw-bold">Task History</h5>
+                {renderTimeline()}
               </Card>
             </Tab>
 

@@ -69,16 +69,42 @@ const updateTask = async (req, res) => {
     const { id } = req.params;
     const { title, status, description, color, size, quantity, category } = req.body;
 
-    const updatedTask = await Task.findByIdAndUpdate(
-      id,
-      { title, status, description, color, size, quantity, category },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedTask) {
+    // Fetch the current task
+    const task = await Task.findById(id);
+    if (!task) {
       return res.status(404).json({ message: 'Task not found' });
     }
 
+    // Save the current state of the task to history
+    const historyEntry = {
+      updatedBy: req.user._id, // Assuming req.user._id contains the ID of the user making the update
+      previousState: {
+        title: task.title,
+        description: task.description,
+        color: task.color,
+        size: task.size,
+        quantity: task.quantity,
+        status: task.status,
+        category: task.category
+      }
+    };
+
+    // Push the history entry to the history array
+    task.history.push(historyEntry);
+
+    // Now, update the task with the new values
+    task.title = title;
+    task.status = status;
+    task.description = description;
+    task.color = color;
+    task.size = size;
+    task.quantity = quantity;
+    task.category = category;
+
+    // Save the updated task
+    const updatedTask = await task.save();
+
+    // Optionally, update the job status
     await checkAndUpdateJobStatus(updatedTask.job);
 
     res.json({ message: 'Task updated successfully', task: updatedTask });
@@ -86,6 +112,7 @@ const updateTask = async (req, res) => {
     res.status(500).json({ message: 'Failed to update task', error: err.message });
   }
 };
+
 
 
 // Add a new voice message
