@@ -58,6 +58,43 @@ const JobList = () => {
     fetchJobs();
   }, [onlyAdmin, isAdmin, user?.email]);
 
+  // Inside JobList component, before return (
+  const handleJobUpdate = async () => {
+    if (!updatedClientName.trim()) {
+      setMessage('Client name cannot be empty.');
+      return;
+    }
+
+    try {
+      const res = await fetch(`${backendURL}/jobs/${selectedJob._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ clientname: updatedClientName }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setJobs(prevJobs =>
+          prevJobs.map(job =>
+            job._id === selectedJob._id ? { ...job, clientname: updatedClientName } : job
+          )
+        );
+        setMessage('Client name updated successfully.');
+        setModalVisible(false);
+      } else {
+        setMessage(data.message || 'Failed to update job.');
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage('Error updating job.');
+    }
+  };
+
+
   // Filtering effect
   useEffect(() => {
     let updatedJobs = [...jobs];
@@ -174,8 +211,8 @@ const JobList = () => {
                   )}
                 </div>
                 <div className="card-footer bg-light small text-muted">
-                  <div>Created: {new Date(job.createdAt).toLocaleDateString()}</div>
-                  <div>Updated: {new Date(job.updatedAt).toLocaleDateString()}</div>
+                  <div>Created: {new Date(job.createdAt).toLocaleString()}</div>
+                  <div>Updated: {new Date(job.updatedAt).toLocaleString()}</div>
                 </div>
               </div>
             </div>

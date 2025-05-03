@@ -136,6 +136,27 @@ function SingleTaskDetails() {
     });
   };
 
+  const handleFileDownload = async (fileUrl, filename = 'downloaded-file') => {
+    try {
+      const response = await fetch(fileUrl, { mode: 'cors' });
+      const blob = await response.blob();
+
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert('Failed to download file');
+    }
+  };
+
+
+
   const handleImageError = (e) => {
     e.target.style.display = 'none';  // Hide the broken image in carousel
   };
@@ -269,7 +290,13 @@ function SingleTaskDetails() {
                     {documents.map((doc, idx) => (
                       <ListGroup.Item key={idx} className="d-flex justify-content-between align-items-center">
                         <a href={doc} target="_blank" download>Document {idx + 1}</a>
-                        <Button variant="outline-primary" href={doc} download><FaDownload /> Download</Button>
+                        <Button
+                          variant="outline-primary"
+                          onClick={() => handleFileDownload(doc, `document-${idx + 1}`)}
+                        >
+                          <FaDownload /> Download
+                        </Button>
+
                       </ListGroup.Item>
                     ))}
                   </ListGroup>
@@ -283,7 +310,12 @@ function SingleTaskDetails() {
                     {images.map((img, idx) => (
                       <ListGroup.Item key={idx} className="d-flex justify-content-between align-items-center">
                         <img src={img} alt={`Image ${idx + 1}`} style={{ width: '100px', height: 'auto' }} />
-                        <Button variant="outline-primary" href={img} download><FaDownload /> Download</Button>
+                        <Button
+  variant="outline-primary"
+  onClick={() => handleFileDownload(img, `image-${idx + 1}`)}
+>
+  <FaDownload /> Download
+</Button>
                       </ListGroup.Item>
                     ))}
                   </ListGroup>
