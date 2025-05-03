@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { backendURL } from '../utils/exports';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaPen, FaPlusCircle, FaBriefcase } from 'react-icons/fa';
@@ -15,9 +15,12 @@ const JobList = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [clientFilter, setClientFilter] = useState('');
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  // Memoize user and role checks
+  const user = useMemo(() => JSON.parse(localStorage.getItem("user")), []);
   const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
+  const onlyAdmin = user?.role === 'admin';
 
+  // Fetch Jobs only once
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
@@ -30,9 +33,17 @@ const JobList = () => {
         const data = await res.json();
         if (res.ok) {
           let jobsList = data.jobs;
+
+          // If not admin, only show pending
           if (!isAdmin) {
             jobsList = jobsList.filter(job => job.status === 'pending');
           }
+
+          // If onlyAdmin, filter to their created jobs
+          if (onlyAdmin) {
+            jobsList = jobsList.filter(job => job.createdBy?.email === user.email);
+          }
+
           setJobs(jobsList);
         } else {
           setMessage('Failed to load jobs.');
@@ -43,9 +54,11 @@ const JobList = () => {
         setLoading(false);
       }
     };
-    fetchJobs();
-  }, []);
 
+    fetchJobs();
+  }, [onlyAdmin, isAdmin, user?.email]);
+
+  // Filtering effect
   useEffect(() => {
     let updatedJobs = [...jobs];
 
@@ -62,38 +75,15 @@ const JobList = () => {
     setFilteredJobs(updatedJobs);
   }, [statusFilter, clientFilter, jobs, isAdmin]);
 
-  const handleJobUpdate = async () => {
-    if (!updatedClientName.trim()) return setMessage('Please enter client name');
-
-    try {
-      const res = await fetch(`${backendURL}/jobs/${selectedJob._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({ clientname: updatedClientName }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Update failed');
-
-      setJobs(jobs.map(job =>
-        job._id === selectedJob._id ? { ...job, clientname: updatedClientName } : job
-      ));
-      setMessage('Client name updated successfully.');
-      setModalVisible(false);
-      setSelectedJob(null);
-    } catch (err) {
-      setMessage(err.message);
-    }
-  };
-
+  // Message timeout
   useEffect(() => {
     if (message) {
       const timeout = setTimeout(() => setMessage(''), 4000);
       return () => clearTimeout(timeout);
     }
   }, [message]);
+
+
 
   return (
     <div className="container my-5">

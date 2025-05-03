@@ -8,14 +8,14 @@ const {
   deleteTask,
   getAllTasks,
   getTasksByJobId,
-  getTaskById 
+  getTaskById
 } = require('../controllers/taskController');
 
 const protect = require('../middleware/authMiddleware');
 const checkRole = require('../middleware/roleMiddleware');
 
 // Upload multiple files (image/pdf/audio) for task creation
-const fileFields = upload.array('files', 5);
+const fileFields = upload.array('files');
 
 // Upload single voice message for chat
 const voiceUpload = upload.single('voice');

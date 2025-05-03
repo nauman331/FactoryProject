@@ -1,9 +1,6 @@
-let counter = 0;
-
 const generateTaskId = () => {
-  counter += 1;
-  const formatted = String(counter).padStart(5, '0');
-  return `AI - ${formatted}`;
+  const base36 = Date.now().toString(36).toUpperCase().slice(-6);
+  return `AI-${base36}`;
 };
 
 module.exports = generateTaskId;

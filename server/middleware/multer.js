@@ -22,38 +22,9 @@ const storage = multer.diskStorage({
   },
 });
 
-// Define allowed MIME types
-const allowedMimeTypes = [
-  'image/jpeg',
-  'image/png',
-  'application/pdf',
-  'audio/mpeg',
-  'audio/webm', // ✅ allow webm audio format from RecordRTC
-];
-
-
-// Configure file filter
-const fileFilter = (req, file, cb) => {
-  if (allowedMimeTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(
-      new multer.MulterError(
-        'LIMIT_UNEXPECTED_FILE',
-        `Unsupported file format. Allowed formats: JPEG, PNG, PDF, MP3.`
-      ),
-      false
-    );
-  }
-};
-
-// Configure multer upload
+// Configure multer upload without fileFilter and limits
 const upload = multer({
   storage,
-  fileFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB
-  },
 });
 
 module.exports = upload;
