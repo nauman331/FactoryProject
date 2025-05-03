@@ -13,6 +13,13 @@ const uploadToCloudinary = async (filePath, folder) => {
   return res.secure_url;
 };
 
+const checkAndUpdateJobStatus = async (jobId) => {
+  const tasks = await Task.find({ job: jobId });
+  const allCompleted = tasks.length > 0 && tasks.every(task => task.status === 'completed');
+  await Job.findByIdAndUpdate(jobId, { status: allCompleted ? 'completed' : 'pending' });
+};
+
+
 // Create Task with client suggestions feature
 const createTask = async (req, res) => {
   try {
@@ -33,8 +40,8 @@ const createTask = async (req, res) => {
       title,
       job: jobId,
       description,
-      color, 
-      size, 
+      color,
+      size,
       quantity,
       images,
       documents,
@@ -46,7 +53,7 @@ const createTask = async (req, res) => {
       return res.status(404).json({ message: 'Associated job not found' });
     }
     job.tasks.push(task._id);
-    await job.updateStatus();
+    await checkAndUpdateJobStatus(jobId);
 
     res.status(201).json({ message: 'Task created successfully', task });
   } catch (err) {
@@ -62,14 +69,7 @@ const updateTask = async (req, res) => {
 
     const updatedTask = await Task.findByIdAndUpdate(
       id,
-      {
-        title,
-        status,
-        description,
-        color, 
-        size, 
-        quantity
-      },
+      { title, status, description, color, size, quantity },
       { new: true, runValidators: true }
     );
 
@@ -77,11 +77,14 @@ const updateTask = async (req, res) => {
       return res.status(404).json({ message: 'Task not found' });
     }
 
+    await checkAndUpdateJobStatus(updatedTask.job);
+
     res.json({ message: 'Task updated successfully', task: updatedTask });
   } catch (err) {
     res.status(500).json({ message: 'Failed to update task', error: err.message });
   }
 };
+
 
 // Add a new voice message
 const addVoiceMessage = async (req, res) => {
@@ -192,5 +195,5 @@ module.exports = {
   deleteTask,
   getAllTasks,
   getTasksByJobId,
-  getTaskById 
+  getTaskById
 };

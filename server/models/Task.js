@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Job = require('./Job');
 
 const taskSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -9,47 +8,13 @@ const taskSchema = new mongoose.Schema({
   job: { type: mongoose.Schema.Types.ObjectId, ref: 'Job' },
   status: { type: String, enum: ['pending', 'in-progress', 'completed'], default: 'pending' },
   description: String,
-  images: [String],
-  documents: [String],
-  voiceMessage: [{
+  images: [String],       // Cloudinary URLs
+  documents: [String],    // Cloudinary URLs
+  voiceMessage: [{        // Array of voice messages for chat-like feature
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     url: String,
     timestamp: { type: Date, default: Date.now }
   }],
 }, { timestamps: true });
-
-// Handle .save()
-taskSchema.post('save', async function (doc) {
-  if (!doc.job) return;
-
-  const Task = mongoose.model('Task');
-  const Job = mongoose.model('Job');
-
-  const allTasks = await Task.find({ job: doc.job });
-  const allCompleted = allTasks.every(task => task.status === 'completed');
-
-  if (allCompleted) {
-    await Job.findByIdAndUpdate(doc.job, { status: 'completed' });
-  } else {
-    await Job.findByIdAndUpdate(doc.job, { status: 'pending' });
-  }
-});
-
-// Handle findByIdAndUpdate / findOneAndUpdate
-taskSchema.post('findOneAndUpdate', async function (doc) {
-  if (!doc || !doc.job) return;
-
-  const Task = mongoose.model('Task');
-  const Job = mongoose.model('Job');
-
-  const allTasks = await Task.find({ job: doc.job });
-  const allCompleted = allTasks.every(task => task.status === 'completed');
-
-  if (allCompleted) {
-    await Job.findByIdAndUpdate(doc.job, { status: 'completed' });
-  } else {
-    await Job.findByIdAndUpdate(doc.job, { status: 'pending' });
-  }
-});
 
 module.exports = mongoose.model('Task', taskSchema);
