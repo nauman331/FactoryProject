@@ -12,7 +12,7 @@ const JobList = () => {
   const [updatedClientName, setUpdatedClientName] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('pending');
   const [clientFilter, setClientFilter] = useState('');
 
   // Memoize user and role checks
@@ -33,17 +33,12 @@ const JobList = () => {
         const data = await res.json();
         if (res.ok) {
           let jobsList = data.jobs;
-
-          // If not admin, only show pending
-          if (!isAdmin) {
-            jobsList = jobsList.filter(job => job.status === 'pending');
-          }
-
-          // If onlyAdmin, filter to their created jobs
+    
+          // Only filter by createdBy for admins
           if (onlyAdmin) {
             jobsList = jobsList.filter(job => job.createdBy?.email === user.email);
           }
-
+    
           setJobs(jobsList);
         } else {
           setMessage('Failed to load jobs.');
@@ -54,6 +49,7 @@ const JobList = () => {
         setLoading(false);
       }
     };
+    
 
     fetchJobs();
   }, [onlyAdmin, isAdmin, user?.email]);
@@ -95,22 +91,30 @@ const JobList = () => {
   };
 
 
-  // Filtering effect
   useEffect(() => {
     let updatedJobs = [...jobs];
 
-    if (isAdmin && statusFilter !== 'all') {
+    // Always filter by status if admin
+    if (isAdmin) {
       updatedJobs = updatedJobs.filter(job => job.status === statusFilter);
     }
 
+    // If not admin, always show only pending
+    if (!isAdmin) {
+      updatedJobs = updatedJobs.filter(job => job.status === 'pending');
+    }
     if (clientFilter.trim()) {
       updatedJobs = updatedJobs.filter(job =>
         job.clientname.toLowerCase().includes(clientFilter.toLowerCase())
       );
     }
 
+    // Sort by createdAt descending (newest first)
+    updatedJobs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
     setFilteredJobs(updatedJobs);
   }, [statusFilter, clientFilter, jobs, isAdmin]);
+
 
   // Message timeout
   useEffect(() => {
@@ -148,7 +152,6 @@ const JobList = () => {
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
-              <option value="all">All Jobs</option>
               <option value="pending">Pending</option>
               <option value="completed">Completed</option>
             </select>

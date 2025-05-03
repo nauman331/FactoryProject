@@ -127,17 +127,15 @@ function CreateTask() {
                 <Form.Select name="status" value={form.status} onChange={handleInputChange} required>
                   <option value="">Select status</option>
                   <option value="pending">Pending</option>
-
-     '', 
-    'pattern-development', 
-    'material-sourcing',
-    'printing',
-    'embossing',
-    'dye-making', 
-    'rough-sample',
-    'cutting',
-    'stitching',
                   <option value="mockup-development">Mockup Development</option>
+                  <option value="pattern-development">Pattern Development</option>
+                  <option value="material-sourcing">Material Sourcing</option>
+                  <option value="printing">Printing</option>
+                  <option value="embossing">Embossing</option>
+                  <option value="dye-making">Dye-Making</option>
+                  <option value="rough-sample">Rough Sample</option>
+                  <option value="cutting">Cutting</option>
+                  <option value="stitching">Stitching</option>
                   <option value="completed">Completed</option>
                 </Form.Select>
               </Form.Group>

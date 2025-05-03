@@ -183,18 +183,18 @@ function SingleTaskDetails() {
                     as="select"
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}>
-                          <option value="">Select status</option>
-                  <option value="pending">Pending</option>
-                  <option value="mockup-development">Mockup Development</option>
-                  <option value="pattern-development">Pattern Development</option>
-                  <option value="material-sourcing">Material Sourcing</option>
-                  <option value="printing">Printing</option>
-                  <option value="embossing">Embossing</option>
-                  <option value="dye-making">Dye-Making</option>
-                  <option value="rough-sample">Rough Sample</option>
-                  <option value="cutting">Cutting</option>
-                  <option value="stitching">Stitching</option>
-                  <option value="completed">Completed</option>
+                    <option value="">Select status</option>
+                    <option value="pending">Pending</option>
+                    <option value="mockup-development">Mockup Development</option>
+                    <option value="pattern-development">Pattern Development</option>
+                    <option value="material-sourcing">Material Sourcing</option>
+                    <option value="printing">Printing</option>
+                    <option value="embossing">Embossing</option>
+                    <option value="dye-making">Dye-Making</option>
+                    <option value="rough-sample">Rough Sample</option>
+                    <option value="cutting">Cutting</option>
+                    <option value="stitching">Stitching</option>
+                    <option value="completed">Completed</option>
                   </Form.Control>
                 </Form.Group>
                 <Button variant="primary" onClick={handleUpdateTask}>
