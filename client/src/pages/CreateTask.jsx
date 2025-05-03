@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Form, Button, Container, Row, Col, Card, Alert, Tooltip, OverlayTrigger } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Form, Button, Container, Row, Col, Card, Alert, Tooltip, OverlayTrigger, Spinner } from 'react-bootstrap';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Trash } from 'react-bootstrap-icons';
 import { backendURL } from "../utils/exports";
@@ -16,16 +16,39 @@ function CreateTask() {
     size: '',
     quantity: '',
     status: '',
+    categoryname: '',
   });
-
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [images, setImages] = useState([]);
   const [pdfs, setPdfs] = useState([]);
   const [dragActive, setDragActive] = useState(false);
   const [message, setMessage] = useState(null);
 
+  const fetchCategories = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`${backendURL}/category`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      const data = await res.json();
+      setCategories(data.categories || []);
+      setLoading(false);
+    } catch (err) {
+      setMessage({ type: 'danger', text: 'Failed to fetch categories' });
+      setLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   const handleInputChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+  
 
   const handleDrop = e => {
     e.preventDefault();
@@ -64,7 +87,7 @@ function CreateTask() {
     Object.entries(form).forEach(([key, value]) => formData.append(key, value));
     images.forEach(img => formData.append('files', img));
     pdfs.forEach(pdf => formData.append('files', pdf));
-
+  
     try {
       const response = await fetch(`${backendURL}/tasks`, {
         method: 'POST',
@@ -73,7 +96,7 @@ function CreateTask() {
         },
         body: formData,
       });
-
+  
       const result = await response.json();
       if (response.ok) {
         setMessage({ type: 'success', text: 'Task created successfully!' });
@@ -84,6 +107,7 @@ function CreateTask() {
           size: '',
           quantity: '',
           status: '',
+          category: '' // reset category field after submission
         });
         setImages([]);
         setPdfs([]);
@@ -95,6 +119,15 @@ function CreateTask() {
       setMessage({ type: 'danger', text: 'Something went wrong. Please try again.' });
     }
   };
+  
+
+  if (loading) {
+    return (
+      <div className="text-center">
+        <Spinner animation="border" />
+      </div>
+    )
+  }
 
   return (
     <Container className="py-5">
@@ -109,7 +142,7 @@ function CreateTask() {
 
         <Form onSubmit={handleSubmit}>
           <Row className="mb-3">
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group>
                 <Form.Label>Title</Form.Label>
                 <Form.Control
@@ -121,7 +154,7 @@ function CreateTask() {
                 />
               </Form.Group>
             </Col>
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group>
                 <Form.Label>Status</Form.Label>
                 <Form.Select name="status" value={form.status} onChange={handleInputChange} required>
@@ -137,6 +170,24 @@ function CreateTask() {
                   <option value="cutting">Cutting</option>
                   <option value="stitching">Stitching</option>
                   <option value="completed">Completed</option>
+                </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={4}>
+              <Form.Group>
+                <Form.Label>Category</Form.Label>
+                <Form.Select
+                  name="category"
+                  value={form.category}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Select Category</option>
+                  {categories.map(category => (
+                    <option key={category._id} value={category._id}>
+                      {category.categoryname}
+                    </option>
+                  ))}
                 </Form.Select>
               </Form.Group>
             </Col>
