@@ -208,13 +208,13 @@ function SingleTaskDetails() {
     <div className="container my-5">
       <Row className="mb-4 align-items-center">
         <Col>
-          <h2 className="fw-bold d-flex align-items-center gap-3 flex-wrap">{task.title} <h5 className='m-0 p-0'><Badge bg="info">{task.status}</Badge></h5>
+          <h2 className="fw-bold d-flex align-items-center gap-3 flex-wrap">{task.title} <h5 className='m-0 p-0'><Badge bg="success">{task.status}</Badge></h5>
           </h2>
         </Col>
         <Col xs="auto">
           {
             isAdmin ?
-              <Button variant="outline-primary" onClick={() => setShowEditModal(true)}>
+              <Button variant="outline-success" onClick={() => setShowEditModal(true)}>
                 <FaEdit /> Edit
               </Button>
               :
@@ -238,7 +238,7 @@ function SingleTaskDetails() {
                     <option value="completed">Completed</option>
                   </Form.Control>
                 </Form.Group>
-                <Button variant="primary" onClick={handleUpdateTask}>
+                <Button variant="success" onClick={handleUpdateTask}>
                   Save Changes
                 </Button>
               </Form>
@@ -270,7 +270,7 @@ function SingleTaskDetails() {
         </Col>
 
         <Col md={7}>
-          <Tabs defaultActiveKey="details" className="mb-3">
+          <Tabs defaultActiveKey="details" className="mb-3 text-success">
             <Tab eventKey="details" title="Details">
               <Card className="p-3 mb-3">
                 <h5 className="fw-bold">Description</h5>
@@ -306,7 +306,7 @@ function SingleTaskDetails() {
 
                 <div className="mt-4 border-top pt-3">
                   {!isRecording ? (
-                    <Button variant="primary" onClick={startRecording}>
+                    <Button variant="success" onClick={startRecording}>
                       <FaMicrophone /> Start Recording
                     </Button>
                   ) : (
@@ -349,7 +349,7 @@ function SingleTaskDetails() {
                       <ListGroup.Item key={idx} className="d-flex justify-content-between align-items-center">
                         <a href={doc} target="_blank" download>Document {idx + 1}</a>
                         <Button
-                          variant="outline-primary"
+                          variant="outline-success"
                           onClick={() => handleFileDownload(doc, `document-${idx + 1}`)}
                         >
                           <FaDownload /> Download
@@ -369,7 +369,7 @@ function SingleTaskDetails() {
                       <ListGroup.Item key={idx} className="d-flex justify-content-between align-items-center">
                         <img src={img} alt={`Image ${idx + 1}`} style={{ width: '100px', height: 'auto' }} />
                         <Button
-                          variant="outline-primary"
+                          variant="outline-success"
                           onClick={() => handleFileDownload(img, `image-${idx + 1}`)}
                         >
                           <FaDownload /> Download
@@ -467,7 +467,7 @@ function SingleTaskDetails() {
           <Button variant="secondary" onClick={() => setShowEditModal(false)}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleUpdateTask}>
+          <Button variant="success" onClick={handleUpdateTask}>
             Save Changes
           </Button>
         </Modal.Footer>
