@@ -256,7 +256,6 @@ function SingleTaskDetails() {
                     className="d-block w-100"
                     src={img}
                     alt={`Slide ${idx + 1}`}
-                    style={{ maxHeight: '400px', objectFit: 'cover', borderRadius: '8px' }}
                     onError={handleImageError}  // Error handling
                   />
                 </Carousel.Item>
