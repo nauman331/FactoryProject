@@ -104,5 +104,6 @@ module.exports = {
   createJob,
   getJobs,
   updateJob,
-  getClientSuggestions
+  getClientSuggestions,
+  getJobsByCategory
 };

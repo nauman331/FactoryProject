@@ -107,7 +107,7 @@ function CreateTask() {
           size: '',
           quantity: '',
           status: '',
-          category: '' // reset category field after submission
+          category: ''
         });
         setImages([]);
         setPdfs([]);

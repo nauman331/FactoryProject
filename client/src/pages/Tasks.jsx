@@ -41,14 +41,14 @@ const TasksList = () => {
       const url = selectedCategory
         ? `${backendURL}/tasks/category/${selectedCategory}`
         : `${backendURL}/tasks/job/${id}`;
-  
+
       const response = await fetch(url, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-  
+
       const data = await response.json();
       const result = Array.isArray(data) ? data : data.tasks || [];
       setTasks(result);
@@ -61,7 +61,7 @@ const TasksList = () => {
       setLoading(false);
     }
   };
-  
+
 
 
   const handleTaskClick = (taskId) => {
