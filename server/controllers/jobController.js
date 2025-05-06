@@ -5,7 +5,7 @@ const generateTaskId = require('../utils/generateTaskId');
 const createJob = async (req, res) => {
   try {
     const { clientname, category } = req.body;
-    const JobId = generateTaskId();
+    const JobId = await generateTaskId();
 
     const job = await Job.create({
       JobId,
