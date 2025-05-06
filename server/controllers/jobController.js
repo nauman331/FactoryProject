@@ -4,12 +4,13 @@ const generateTaskId = require('../utils/generateTaskId');
 
 const createJob = async (req, res) => {
   try {
-    const { clientname } = req.body;
+    const { clientname, category } = req.body;
     const JobId = generateTaskId();
 
     const job = await Job.create({
       JobId,
       clientname,
+      category,
       createdBy: req.user._id,
     });
 
@@ -22,18 +23,25 @@ const createJob = async (req, res) => {
 
 const updateJob = async (req, res) => {
   try {
-    const { clientname  } = req.body;
+    const { clientname, category  } = req.body;
 
-    if (!clientname ) {
+    if (!clientname) {
       return res.status(400).json({ message: 'Client Name is required to update' });
     }
+    if (!category) {
+      return res.status(400).json({ message: 'Category is required to update' });
+    }
 
-    // Only update details
+    const updateFields = {};
+    if (clientname) updateFields.clientname = clientname;
+    if (category) updateFields.category = category;
+    
     const updatedJob = await Job.findByIdAndUpdate(
       req.params.id,
-      { clientname },
+      updateFields,
       { new: true, runValidators: true }
     );
+    
 
     if (!updatedJob) {
       return res.status(404).json({ message: 'Job not found' });
@@ -71,6 +79,25 @@ const getClientSuggestions = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch suggestions' });
   }
 };
+
+// Get Jobs by Category
+const getJobsByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+
+    if (!category) {
+      return res.status(400).json({ message: 'Category is required' });
+    }
+
+    const jobs = await Job.find({ category }).populate("createdBy");
+
+    res.status(200).json({ jobs, category });
+  } catch (err) {
+    console.error('Failed to get jobs by category:', err);
+    res.status(500).json({ message: 'Failed to get jobs by category', error: err.message });
+  }
+};
+
 
 
 module.exports = {

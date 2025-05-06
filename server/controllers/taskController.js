@@ -57,7 +57,7 @@ const createTask = async (req, res) => {
     job.tasks.push(task._id);
     await checkAndUpdateJobStatus(jobId);
 
-    res.status(201).json({ message: 'Task created successfully', task });
+    res.status(201).json({ message: 'Product created successfully', task });
   } catch (err) {
     res.status(500).json({ message: 'Failed to create task', error: err.message });
   }
@@ -72,7 +72,7 @@ const updateTask = async (req, res) => {
     // Fetch the current task
     const task = await Task.findById(id);
     if (!task) {
-      return res.status(404).json({ message: 'Task not found' });
+      return res.status(404).json({ message: 'Product not found' });
     }
 
     // Save the current state of the task to history
@@ -107,9 +107,9 @@ const updateTask = async (req, res) => {
     // Optionally, update the job status
     await checkAndUpdateJobStatus(updatedTask.job);
 
-    res.json({ message: 'Task updated successfully', task: updatedTask });
+    res.json({ message: 'Product updated successfully', task: updatedTask });
   } catch (err) {
-    res.status(500).json({ message: 'Failed to update task', error: err.message });
+    res.status(500).json({ message: 'Failed to update product', error: err.message });
   }
 };
 
@@ -130,7 +130,7 @@ const addVoiceMessage = async (req, res) => {
 
     const task = await Task.findById(taskId);
     if (!task) {
-      return res.status(404).json({ message: 'Task not found' });
+      return res.status(404).json({ message: 'Product not found' });
     }
 
     task.voiceMessage.push({
@@ -152,14 +152,14 @@ const deleteTask = async (req, res) => {
 
     const task = await Task.findByIdAndDelete(id);
     if (!task) {
-      return res.status(404).json({ message: 'Task not found' });
+      return res.status(404).json({ message: 'Product not found' });
     }
 
     await Job.findByIdAndUpdate(task.job, { $pull: { tasks: id } });
 
-    res.json({ message: 'Task deleted successfully' });
+    res.json({ message: 'Product deleted successfully' });
   } catch (err) {
-    res.status(500).json({ message: 'Failed to delete task', error: err.message });
+    res.status(500).json({ message: 'Failed to delete product', error: err.message });
   }
 };
 
@@ -173,7 +173,7 @@ const getAllTasks = async (req, res) => {
 
     res.json(tasks);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch tasks', error: err.message });
+    res.status(500).json({ message: 'Failed to fetch products', error: err.message });
   }
 };
 
@@ -188,7 +188,7 @@ const getTasksByJobId = async (req, res) => {
       .exec();
 
     if (!tasks || tasks.length === 0) {
-      return res.status(404).json({ message: 'No tasks found for this job' });
+      return res.status(404).json({ message: 'No products found for this job' });
     }
 
     res.json({ message: 'Tasks fetched successfully', tasks });
@@ -208,12 +208,12 @@ const getTaskById = async (req, res) => {
       .exec();
 
     if (!task) {
-      return res.status(404).json({ message: 'Task not found' });
+      return res.status(404).json({ message: 'Product not found' });
     }
 
-    res.json({ message: 'Task fetched successfully', task });
+    res.json({ message: 'Product fetched successfully', task });
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch task', error: err.message });
+    res.status(500).json({ message: 'Failed to fetch product', error: err.message });
   }
 };
 
@@ -229,12 +229,12 @@ const filterByCategory = async (req, res) => {
       .exec();
 
     if (!tasks || tasks.length === 0) {
-      return res.status(404).json({ message: 'No tasks found for this category' });
+      return res.status(404).json({ message: 'No products found for this category' });
     }
 
-    res.json({ message: 'Tasks fetched successfully by category', tasks });
+    res.json({ message: 'Products fetched successfully by category', tasks });
   } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch tasks by category', error: err.message });
+    res.status(500).json({ message: 'Failed to fetch Products by category', error: err.message });
   }
 };
 
