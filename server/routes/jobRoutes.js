@@ -5,7 +5,6 @@ const {
   getJobs,
   updateJob,
   getClientSuggestions,
-  getJobsByCategory
 } = require('../controllers/jobController');
 
 const protect = require('../middleware/authMiddleware');
@@ -19,9 +18,6 @@ router.get('/', protect, getJobs);
 
 // Route to get job suggestions by client name
 router.get('/suggestions', protect, checkRole(['admin', 'superadmin']), getClientSuggestions);
-
-// Route to get jobs by category
-router.get('/category/:category', protect, getJobsByCategory);
 
 // Route to update a job by ID
 router.put('/:id', protect, checkRole(['admin', 'superadmin']), updateJob);

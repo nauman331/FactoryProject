@@ -95,7 +95,7 @@ const TasksList = () => {
   return (
     <Container className="py-5">
       <h2 className="text-center mb-4">All Products</h2>
-      <Form.Group className="mb-4">
+      {/* <Form.Group className="mb-4">
         <Form.Label>Filter by Category</Form.Label>
         <Form.Select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
           <option value="">All Categories</option>
@@ -103,7 +103,7 @@ const TasksList = () => {
             <option key={cat._id} value={cat._id}>{cat.categoryname}</option>
           ))}
         </Form.Select>
-      </Form.Group>
+      </Form.Group> */}
 
       <Row className="g-4">
         {filteredTasks?.map((task) => (

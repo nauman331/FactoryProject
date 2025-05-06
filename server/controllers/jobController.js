@@ -56,7 +56,7 @@ const updateJob = async (req, res) => {
 
 const getJobs = async (req, res) => {
   try {
-    const jobs = await Job.find().populate("createdBy"); 
+    const jobs = await Job.find().populate("createdBy").populate("category"); 
     res.json({ jobs });
   } catch (err) {
     console.error('Failed to retrieve jobs:', err);

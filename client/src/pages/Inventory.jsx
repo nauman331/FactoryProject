@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { backendURL } from '../utils/exports';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaPen, FaPlusCircle, FaBriefcase } from 'react-icons/fa';
+import { Form } from 'react-bootstrap';
 
 const JobList = () => {
   const navigate = useNavigate();
@@ -9,7 +10,10 @@ const JobList = () => {
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [category, setCategory] = useState('');
   const [updatedClientName, setUpdatedClientName] = useState('');
+  const [loadingCategories, setLoadingCategories] = useState(false);
+  const [categories, setCategories] = useState([]);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [statusFilter, setStatusFilter] = useState('pending');
@@ -19,6 +23,26 @@ const JobList = () => {
   const user = useMemo(() => JSON.parse(localStorage.getItem("user")), []);
   const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
   const onlyAdmin = user?.role === 'admin';
+
+  const fetchCategories = async () => {
+    try {
+      setLoadingCategories(true);
+      const res = await fetch(`${backendURL}/category`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      const data = await res.json();
+      setCategories(data.categories || []);
+    } catch (err) {
+      setVariant('danger');
+      setMessage('Failed to fetch categories');
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   // Fetch Jobs only once
   useEffect(() => {
@@ -90,30 +114,37 @@ const JobList = () => {
     }
   };
 
-
   useEffect(() => {
     let updatedJobs = [...jobs];
 
-    // Always filter by status if admin
+    // Admin filters by selected status
     if (isAdmin) {
       updatedJobs = updatedJobs.filter(job => job.status === statusFilter);
     }
 
-    // If not admin, always show only pending
+    // Non-admins always see only pending jobs
     if (!isAdmin) {
       updatedJobs = updatedJobs.filter(job => job.status === 'pending');
     }
+
+    // Filter by client name
     if (clientFilter.trim()) {
       updatedJobs = updatedJobs.filter(job =>
         job.clientname.toLowerCase().includes(clientFilter.toLowerCase())
       );
     }
 
-    // Sort by createdAt descending (newest first)
+    // ✅ Filter by selected category
+    if (category) {
+      updatedJobs = updatedJobs.filter(job => job.category?._id === category);
+    }
+
+    // Sort by creation date (newest first)
     updatedJobs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     setFilteredJobs(updatedJobs);
-  }, [statusFilter, clientFilter, jobs, isAdmin]);
+  }, [statusFilter, clientFilter, category, jobs, isAdmin]);
+
 
 
   // Message timeout
@@ -157,6 +188,25 @@ const JobList = () => {
             </select>
           </div>
         )}
+        <div className="col-md-3">
+          <Form.Select
+            id="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            required
+          >
+            <option value="">Select Category</option>
+            {loadingCategories ? (
+              <option>Loading categories...</option>
+            ) : (
+              categories.map((cat) => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.categoryname}
+                </option>
+              ))
+            )}
+          </Form.Select>
+        </div>
         <div className="col-md-4">
           <input
             type="text"
@@ -203,6 +253,7 @@ const JobList = () => {
                 </div>
                 <div className="card-body">
                   <p><strong>Client:</strong> {job.clientname}</p>
+                  <p><strong>Category:</strong> {job.category?.categoryname || 'N/A'}</p>
                   <p><strong>Created By:</strong> {job.createdBy?.name || 'N/A'}</p>
                   {isAdmin && (
                     <>
