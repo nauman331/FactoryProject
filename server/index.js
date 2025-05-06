@@ -20,7 +20,8 @@ const app = express();
 
 const allowedOrigins = [
     'https://factory-project-rho.vercel.app',
-    'http://localhost:5173'
+    'http://localhost:5173',
+    "https://amazingindustries.onrender.com"
 ];
 
 const corsOptions = {
