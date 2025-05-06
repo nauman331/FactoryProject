@@ -80,24 +80,6 @@ const getClientSuggestions = async (req, res) => {
   }
 };
 
-// Get Jobs by Category
-const getJobsByCategory = async (req, res) => {
-  try {
-    const { category } = req.params;
-
-    if (!category) {
-      return res.status(400).json({ message: 'Category is required' });
-    }
-
-    const jobs = await Job.find({ category }).populate("createdBy");
-
-    res.status(200).json({ jobs, category });
-  } catch (err) {
-    console.error('Failed to get jobs by category:', err);
-    res.status(500).json({ message: 'Failed to get jobs by category', error: err.message });
-  }
-};
-
 
 
 module.exports = {
@@ -105,5 +87,4 @@ module.exports = {
   getJobs,
   updateJob,
   getClientSuggestions,
-  getJobsByCategory
 };
