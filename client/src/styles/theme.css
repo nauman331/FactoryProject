@@ -48,3 +48,12 @@ body {
   font-size: 0.75rem;
   letter-spacing: 0.5px;
 }
+.nav-tabs .nav-link {
+  color: green !important; /* Inactive tabs text color */
+}
+
+.nav-tabs .nav-link.active {
+  color: white !important; /* Active tab text color */
+  background-color: green !important; /* Active tab background */
+  border-color: green !important;
+}
