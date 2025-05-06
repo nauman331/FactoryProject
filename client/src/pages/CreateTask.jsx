@@ -20,6 +20,7 @@ function CreateTask() {
   });
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [sendLoading, setSendLoading] = useState(false);
   const [images, setImages] = useState([]);
   const [pdfs, setPdfs] = useState([]);
   const [dragActive, setDragActive] = useState(false);
@@ -89,6 +90,7 @@ function CreateTask() {
     pdfs.forEach(pdf => formData.append('files', pdf));
 
     try {
+      setSendLoading(true);
       const response = await fetch(`${backendURL}/tasks`, {
         method: 'POST',
         headers: {
@@ -117,6 +119,8 @@ function CreateTask() {
       }
     } catch (err) {
       setMessage({ type: 'danger', text: 'Something went wrong. Please try again.' });
+    } finally {
+      setSendLoading(false)
     }
   };
 
@@ -132,7 +136,7 @@ function CreateTask() {
   return (
     <Container className="py-5">
       <Card className="shadow-lg border-0 p-4">
-        <h3 className="text-center mb-4 text-primary">Add New Product</h3>
+        <h3 className="text-center mb-4 text-success fw-bold">Add New Product</h3>
 
         {message && (
           <Alert variant={message.type} onClose={() => setMessage(null)} dismissible>
@@ -249,7 +253,7 @@ function CreateTask() {
           <Form.Group className="mb-4">
             <Form.Label>Upload Images & PDFs</Form.Label>
             <div
-              className={`p-4 text-center border border-2 rounded ${dragActive ? 'border-primary bg-light' : 'border-secondary'}`}
+              className={`p-4 text-center border border-2 rounded ${dragActive ? 'border-success bg-light' : 'border-secondary'}`}
               onDragOver={e => {
                 e.preventDefault();
                 setDragActive(true);
@@ -312,8 +316,8 @@ function CreateTask() {
           </Form.Group>
 
           <div className="d-grid">
-            <Button type="submit" size="lg" variant="primary">
-              Add Product
+            <Button type="submit" disabled={sendLoading} size="lg" variant="success">
+              {sendLoading ? "Adding Product..." : "Add Product"}
             </Button>
           </div>
         </Form>

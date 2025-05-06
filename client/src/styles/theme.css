@@ -39,3 +39,12 @@ body {
 .sidebar-transition.expanded {
   width: 220px;
 }
+
+.card:hover {
+  box-shadow: 0 6px 20px rgba(0, 128, 0, 0.15);
+}
+
+.card .badge {
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}

@@ -94,7 +94,7 @@ const TasksList = () => {
 
   return (
     <Container className="py-5">
-      <h2 className="text-center mb-4">All Products</h2>
+      <h2 className="text-success mb-4">All Products</h2>
       {/* <Form.Group className="mb-4">
         <Form.Label>Filter by Category</Form.Label>
         <Form.Select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
@@ -140,7 +140,7 @@ const TasksList = () => {
                 />
               )}
               <Card.Body className="d-flex flex-column">
-                <Card.Title className="text-primary">{task.title}</Card.Title>
+                <Card.Title className="text-success">{task.title}</Card.Title>
                 <Card.Text className="text-muted" style={{ fontSize: '0.9rem' }}>
                   {task.description?.substring(0, 80)}...
                 </Card.Text>
@@ -158,7 +158,7 @@ const TasksList = () => {
               className="d-flex align-items-center justify-content-center h-100 add-task-card shadow-sm"
               style={{
                 cursor: 'pointer',
-                border: '2px dashed #0d6efd',
+                border: '2px dashed #01A653',
                 background: '#f8f9fa',
                 borderRadius: '10px',
                 transition: 'background 0.3s',
@@ -168,7 +168,7 @@ const TasksList = () => {
               onMouseLeave={(e) => (e.currentTarget.style.background = '#f8f9fa')}
             >
               <div className="text-center">
-                <h1 className="text-primary">+</h1>
+                <h1 className="text-success">+</h1>
                 <p className="text-muted">Add New Product</p>
               </div>
             </Card>

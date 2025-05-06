@@ -155,6 +155,16 @@ const JobList = () => {
     }
   }, [message]);
 
+  const formatDateTime = (date) =>
+    new Date(date).toLocaleString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+    });
 
 
   return (
@@ -231,12 +241,19 @@ const JobList = () => {
             <div key={job._id} className="col-12 col-sm-6 col-lg-4 col-xl-3">
               <div
                 className="card border-0 shadow h-100"
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
                 onClick={() => navigate(`/tasks/${job._id}`)}
+                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
               >
-                <div className="bg-success text-white text-center p-4 position-relative rounded-top">
-                  <FaBriefcase size={30} />
+                {/* Header */}
+                <div className="bg-success text-white text-center p-3 position-relative rounded-top">
+                <h5 className="fw-bolder">{job.JobId}</h5>
                   {isAdmin && (
+                    <>
+                     <span className={`badge ${job.status === 'pending' ? 'bg-light text-warning' : 'text-success bg-light'}`}>
+                        {job.status.toUpperCase()}
+                      </span>
                     <button
                       className="btn btn-sm btn-light text-success rounded-circle position-absolute top-0 end-0 m-2"
                       onClick={(e) => {
@@ -245,32 +262,35 @@ const JobList = () => {
                         setUpdatedClientName(job.clientname);
                         setModalVisible(true);
                       }}
+                      title="Edit Client Name"
                     >
-                      <FaPen size={14} />
+                      <FaPen size={13} />
                     </button>
-                  )}
-                  <h5 className="mt-2 mb-0 fw-bold">{job.JobId}</h5>
-                </div>
-                <div className="card-body">
-                  <p><strong>Client:</strong> {job.clientname}</p>
-                  <p><strong>Category:</strong> {job.category?.categoryname || 'N/A'}</p>
-                  <p><strong>Created By:</strong> {job.createdBy?.name || 'N/A'}</p>
-                  {isAdmin && (
-                    <>
-                      <p className="text-muted small">{job.createdBy?.email}</p>
-                      <span className={`badge ${job.status === 'pending' ? 'bg-warning text-dark' : 'bg-success'}`}>
-                        {job.status.toUpperCase()}
-                      </span>
                     </>
                   )}
                 </div>
-                <div className="card-footer bg-light small text-muted">
-                  <div>Created: {new Date(job.createdAt).toLocaleString()}</div>
-                  <div>Updated: {new Date(job.updatedAt).toLocaleString()}</div>
+
+                {/* Body */}
+                <div className="card-body py-3 px-4">
+                  <p className="mb-2"><strong>Client:</strong> {job.clientname}</p>
+                  <p className="mb-2"><strong>Category:</strong> {job.category?.categoryname || 'N/A'}</p>
+                  <p className="mb-2"><strong>Created By:</strong> {job.createdBy?.name || 'N/A'}</p>
+                  {isAdmin && (
+                    <>
+                      <p className="text-muted small mb-2">{job.createdBy?.email}</p>
+                    </>
+                  )}
+                </div>
+
+                {/* Footer with Full Date & Time */}
+                <div className="card-footer bg-light text-muted small px-3 py-2">
+                  <div><strong>Created:</strong> {formatDateTime(job.createdAt)}</div>
+                  <div><strong>Updated:</strong> {formatDateTime(job.updatedAt)}</div>
                 </div>
               </div>
             </div>
           ))}
+
         </div>
       )}
 
