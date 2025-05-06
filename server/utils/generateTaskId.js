@@ -6,7 +6,7 @@ const generateUniqueTaskId = async () => {
 
   while (!isUnique) {
     const sixDigit = Math.floor(100000 + Math.random() * 900000);
-    taskId = `AI-${sixDigit}`;
+    JobId = `AI-${sixDigit}`;
     const existing = await Product.findOne({ JobId });
     if (!existing) {
       isUnique = true;
