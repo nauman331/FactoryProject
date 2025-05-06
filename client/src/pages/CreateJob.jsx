@@ -113,7 +113,7 @@ const CreateJob = () => {
     <div className="container my-5">
       <div className="row justify-content-center">
         <div className="col-md-6">
-          <h2 className="mb-4 text-center fw-bold text-primary">Create New Job</h2>
+          <h2 className="mb-4 text-center fw-bold text-success">Create New Job</h2>
 
           {message && (
             <div className={`alert alert-${variant}`} role="alert">
@@ -179,7 +179,7 @@ const CreateJob = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="btn btn-primary w-100 fw-semibold"
+              className="btn btn-success w-100 fw-semibold"
               disabled={creatingJob}
             >
               {creatingJob ? (
