@@ -79,7 +79,7 @@ const CategoryManager = () => {
 
     return (
         <div className="container py-4">
-            <h2 className="mb-4 text-center">Category Management</h2>
+            <h2 className="mb-4 text-success">Category Management</h2>
 
             {message && <Alert variant="success">{message}</Alert>}
             {error && <Alert variant="danger">{error}</Alert>}
@@ -94,7 +94,7 @@ const CategoryManager = () => {
                         onChange={(e) => setCategoryName(e.target.value)}
                     />
                 </Form.Group>
-                <Button variant="primary" type="submit" className="mt-3">
+                <Button variant="success" type="submit" className="mt-3">
                     Add Category
                 </Button>
             </Form>

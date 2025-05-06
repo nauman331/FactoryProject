@@ -160,7 +160,7 @@ const JobList = () => {
   return (
     <div className="container my-5">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-        <h2 className="fw-bold text-primary">All Jobs</h2>
+        <h2 className="fw-bold text-success">All Jobs</h2>
         {isAdmin && (
           <Link to="/createjob" className="btn btn-success d-flex align-items-center gap-2 mt-3 mt-md-0">
             <FaPlusCircle /> Create Job
@@ -221,7 +221,7 @@ const JobList = () => {
       {/* Job Cards */}
       {loading ? (
         <div className="text-center">
-          <div className="spinner-border text-primary" role="status" />
+          <div className="spinner-border text-success" role="status" />
         </div>
       ) : filteredJobs.length === 0 ? (
         <p className="text-muted text-center">No jobs found.</p>
@@ -234,11 +234,11 @@ const JobList = () => {
                 style={{ cursor: 'pointer' }}
                 onClick={() => navigate(`/tasks/${job._id}`)}
               >
-                <div className="bg-primary text-white text-center p-4 position-relative rounded-top">
+                <div className="bg-success text-white text-center p-4 position-relative rounded-top">
                   <FaBriefcase size={30} />
                   {isAdmin && (
                     <button
-                      className="btn btn-sm btn-light text-primary rounded-circle position-absolute top-0 end-0 m-2"
+                      className="btn btn-sm btn-light text-success rounded-circle position-absolute top-0 end-0 m-2"
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelectedJob(job);
@@ -302,7 +302,7 @@ const JobList = () => {
                   </div>
                   <div className="modal-footer">
                     <button className="btn btn-secondary" onClick={() => setModalVisible(false)}>Close</button>
-                    <button className="btn btn-primary" onClick={handleJobUpdate}>Update</button>
+                    <button className="btn btn-success" onClick={handleJobUpdate}>Update</button>
                   </div>
                 </div>
               </div>

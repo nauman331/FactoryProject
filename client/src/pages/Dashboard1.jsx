@@ -50,7 +50,7 @@ function Dashboard1() {
 
   return (
     <Container fluid className="p-4">
-      <h2 className="mb-4 fw-bold text-dark">📊 Dashboard</h2>
+      <h2 className="mb-4 fw-bold text-success">Dashboard</h2>
 
       <Row xs={1} md={2} xl={3} className="g-4 mb-4">
         <Col>
@@ -92,7 +92,7 @@ function Dashboard1() {
         <Col md={12} lg={6}>
           <Card className="shadow-sm border-0" style={{ borderRadius: '1rem' }}>
             <Card.Body>
-              <h5 className="fw-bold mb-3">📈 Jobs Per Day</h5>
+              <h5 className="fw-bold mb-3 text-success">Jobs Per Day</h5>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={jobsPerDay}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -110,7 +110,7 @@ function Dashboard1() {
         <Col md={12} lg={6}>
           <Card className="shadow-sm border-0" style={{ borderRadius: '1rem' }}>
             <Card.Body>
-              <h5 className="fw-bold mb-3">📊 Workers Per Day</h5>
+              <h5 className="fw-bold mb-3 text-success">Workers Per Day</h5>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={workersPerDay}>
                   <CartesianGrid strokeDasharray="3 3" />

@@ -123,7 +123,7 @@ const UserManagement = () => {
           </select>
         </div>
         <div className="col-md-1">
-          <button type="submit" className="btn btn-primary w-100">Add</button>
+          <button type="submit" className="btn btn-success w-100">Add</button>
         </div>
       </form>
 

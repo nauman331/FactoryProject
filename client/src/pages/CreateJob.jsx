@@ -10,7 +10,7 @@ const CreateJob = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [message, setMessage] = useState('');
   const [variant, setVariant] = useState('');
-  const [loadingCategories, setLoadingCategories] = useState(false); // separate loading state for categories
+  const [loadingCategories, setLoadingCategories] = useState(false);
   const [creatingJob, setCreatingJob] = useState(false); // separate loading state for job creation
   const navigate = useNavigate();
 

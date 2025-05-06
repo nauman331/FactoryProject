@@ -1,30 +1,31 @@
 // components/Navbar.jsx
-import { Navbar as BootstrapNavbar, Container, Button, Nav } from 'react-bootstrap';
+import { Navbar as BootstrapNavbar, Container, Button } from 'react-bootstrap';
 import { List, DoorOpen } from 'react-bootstrap-icons';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import logo2 from '../assets/logo2.jpeg';
 
 function Navbar({ toggleSidebar }) {
   const navigate = useNavigate();
   const { logout } = useAuth();
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem('user'));
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
-  const isAdmin = user?.role === "admin" || user?.role === "superadmin";
-  const isMember = user?.role === "member";
+  const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
+  const isMember = user?.role === 'member';
 
   return (
-    <BootstrapNavbar bg="dark" variant="dark" className="shadow-sm fixed-top">
+    <BootstrapNavbar bg="light" variant="light" className="shadow-sm fixed-top">
       <Container fluid className="d-flex justify-content-between align-items-center">
         {/* Sidebar Toggle Button for Admins */}
         {isAdmin && (
           <Button
-            variant="outline-warning"
+            variant="outline-success"
             className="d-md-none me-2"
             onClick={toggleSidebar}
           >
@@ -32,9 +33,13 @@ function Navbar({ toggleSidebar }) {
           </Button>
         )}
 
-        {/* Brand Title */}
-        <BootstrapNavbar.Brand className="text-warning fw-bold">
-          {user && <>🧤 Factory {isMember ? "User" : "Admin"} Panel</>}
+        {/* Logo Only */}
+        <BootstrapNavbar.Brand className="mb-0">
+          <img
+            src={logo2}
+            alt="Factory Logo"
+            style={{ height: '40px', objectFit: 'contain' }}
+          />
         </BootstrapNavbar.Brand>
 
         {/* Logout Button for Members */}

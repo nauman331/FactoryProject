@@ -1,6 +1,6 @@
 body {
   font-family: 'Inter', sans-serif;
-  background-color: #f8f9fa;
+  background-color: #eee !important;
 }
 
 .app-content {
@@ -19,7 +19,7 @@ body {
 }
 
 .sidebar-link:hover {
-  background-color: #ffc107 !important;
+  background-color: #01A653 !important;
   color: #212529 !important;
   transform: scale(1.02);
 }

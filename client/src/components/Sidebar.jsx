@@ -61,7 +61,7 @@ function Sidebar({ showSidebar, setShowSidebar }) {
 
   return (
     <div
-      className={`bg-dark text-white position-fixed h-100 shadow sidebar-transition 
+      className={`bg-light text-white position-fixed h-100 shadow sidebar-transition 
         ${hovered || isMobile ? 'expanded' : 'collapsed'} 
         ${!showSidebar && isMobile ? 'd-none' : ''}`}
       onMouseEnter={() => setHovered(true)}
@@ -75,7 +75,7 @@ function Sidebar({ showSidebar, setShowSidebar }) {
             to={item.to}
             onClick={() => isMobile && setShowSidebar(false)}
             className={`my-1 d-flex align-items-center rounded px-3 py-2 sidebar-link w-100 
-              ${location.pathname === item.to ? 'text-warning fw-bold' : 'text-white'}`}
+              ${location.pathname === item.to ? 'text-success fw-bold' : 'text-black'}`}
           >
             <span className="me-2 fs-5" title={item.label}>{item.icon}</span>
             {(hovered || isMobile) && <span>{item.label}</span>}
