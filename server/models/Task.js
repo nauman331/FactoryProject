@@ -25,14 +25,19 @@ const taskSchema = new mongoose.Schema({
     default: 'pending' 
   },
   description: String,
-  images: [String], // Cloudinary URLs
-  documents: [String], // Cloudinary URLs
-  voiceMessage: [{ // Array of voice messages for chat-like feature
+  images: [String],
+  documents: [String],
+  voiceMessage: [{ 
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     url: String,
     timestamp: { type: Date, default: Date.now }
   }],
-  history: [{ // Track changes over time
+  textMessages: [{ 
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    message: String,
+    timestamp: { type: Date, default: Date.now }
+  }],  
+  history: [{ 
     updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     updatedAt: { type: Date, default: Date.now },
     previousState: {

@@ -12,6 +12,7 @@ function SingleTaskDetails() {
 
   const [task, setTask] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [history, setHistory] = useState([]);
 
@@ -21,6 +22,8 @@ function SingleTaskDetails() {
   const [color, setColor] = useState('');
   const [size, setSize] = useState('');
   const [quantity, setQuantity] = useState('');
+
+  const [textMessage, setTextMessage] = useState('');
 
   const [voiceMessages, setVoiceMessages] = useState([]);
   const [images, setImages] = useState([]);
@@ -130,6 +133,35 @@ function SingleTaskDetails() {
     }
   };
 
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!textMessage.trim()) return;
+
+    try {
+      setLoading(true);
+      const res = await fetch(`${backendURL}/tasks/${id}/text`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`, // adjust token if stored differently
+        },
+        body: JSON.stringify({ message: textMessage }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setTask(data.task);
+        setTextMessage('');
+      } else {
+        alert(data.message || 'Failed to send message');
+      }
+    } catch (err) {
+      console.error('Error sending message:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleString('en-US', {
@@ -177,9 +209,9 @@ function SingleTaskDetails() {
               {task.history.map((historyItem, idx) => (
                 <ListGroup.Item key={idx} className="d-flex justify-content-between align-items-center">
                   <div>
-                  <div className="text-muted">
-                    <small>{formatDate(historyItem.updatedAt)}</small>
-                  </div>
+                    <div className="text-muted">
+                      <small>{formatDate(historyItem.updatedAt)}</small>
+                    </div>
                     <ul>
                       <li><strong>Title:</strong> {historyItem.previousState.title}</li>
                       <li><strong>Description:</strong> {historyItem.previousState.description}</li>
@@ -283,50 +315,85 @@ function SingleTaskDetails() {
               </Card>
             </Tab>
 
-            <Tab eventKey="voice" title="Voice Chat">
-              <Card className="p-3 mb-3">
-                {voiceMessages.length === 0 ? (
-                  <p>No voice messages</p>
-                ) : (
-                  <ListGroup variant="flush">
-                    {voiceMessages.map((msg, idx) => (
-                      <ListGroup.Item key={idx} className="d-flex flex-column mb-2 rounded shadow-sm">
-                        <div className="d-flex justify-content-between">
-                          <strong>{msg.user.name}</strong>
-                          <small className="text-muted">{formatDate(msg.createdAt)}</small>
-                        </div>
-                        <audio controls className="mt-2 w-100">
-                          <source src={msg.url} type="audio/mpeg" />
-                        </audio>
-                      </ListGroup.Item>
-                    ))}
-                  </ListGroup>
-                )}
-
-                <div className="mt-4 border-top pt-3">
-                  {!isRecording ? (
-                    <Button variant="success" onClick={startRecording}>
-                      <FaMicrophone /> Start Recording
-                    </Button>
-                  ) : (
-                    <Button variant="danger" onClick={stopRecording}>Stop Recording</Button>
-                  )}
-
-                  {recordingUrl && (
-                    <div className="mt-3">
-                      <audio controls className="w-100" src={recordingUrl}></audio>
-                      <div className="mt-2 d-flex gap-2">
-                        <Button variant="success" onClick={uploadVoiceMessage}>Send</Button>
-                        <Button variant="secondary" onClick={() => {
-                          setRecordedBlob(null);
-                          setRecordingUrl(null);
-                        }}>Re-record</Button>
-                      </div>
-                    </div>
-                  )}
+            <Tab eventKey="voice" title="Chat">
+  <Row>
+    <Col md={6}>
+      <Card className="p-3 mb-3">
+        <Card.Header>Voice Chat</Card.Header>
+        {voiceMessages.length === 0 ? (
+          <p>No voice messages</p>
+        ) : (
+          <ListGroup variant="flush">
+            {voiceMessages.map((msg, idx) => (
+              <ListGroup.Item key={idx} className="d-flex flex-column mb-2 rounded shadow-sm">
+                <div className="d-flex justify-content-between">
+                  <strong>{msg.user.name}</strong>
+                  <small className="text-muted">{formatDate(msg.createdAt)}</small>
                 </div>
-              </Card>
-            </Tab>
+                <audio controls className="mt-2 w-100">
+                  <source src={msg.url} type="audio/mpeg" />
+                </audio>
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        )}
+
+        <div className="mt-4 border-top pt-3">
+          {!isRecording ? (
+            <Button variant="success" onClick={startRecording}>
+              <FaMicrophone /> Start Recording
+            </Button>
+          ) : (
+            <Button variant="danger" onClick={stopRecording}>Stop Recording</Button>
+          )}
+
+          {recordingUrl && (
+            <div className="mt-3">
+              <audio controls className="w-100" src={recordingUrl}></audio>
+              <div className="mt-2 d-flex gap-2">
+                <Button variant="success" onClick={uploadVoiceMessage}>Send</Button>
+                <Button variant="secondary" onClick={() => {
+                  setRecordedBlob(null);
+                  setRecordingUrl(null);
+                }}>Re-record</Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </Card>
+    </Col>
+
+    <Col md={6}>
+      <Card className="mt-4 mt-md-0">
+        <Card.Header>Text Chat</Card.Header>
+        <Card.Body>
+          <ListGroup variant="flush">
+            {task?.textMessages?.map((msg, idx) => (
+              <ListGroup.Item key={idx}>
+                <strong>{msg.user?.name || 'User'}: </strong>
+                {msg.message}
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+
+          <Form onSubmit={handleSendMessage} className="mt-3 d-flex">
+            <Form.Control
+              type="text"
+              placeholder="Enter your message..."
+              value={textMessage}
+              onChange={(e) => setTextMessage(e.target.value)}
+              disabled={loading}
+            />
+            <Button type="submit" variant='success' disabled={loading} className="ms-2">
+              Send
+            </Button>
+          </Form>
+        </Card.Body>
+      </Card>
+    </Col>
+  </Row>
+</Tab>
+
 
             <Tab eventKey="history" title={<><FaHistory /> Timeline</>}>
               <Card className="p-3 mb-3">

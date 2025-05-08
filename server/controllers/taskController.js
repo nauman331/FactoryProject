@@ -145,6 +145,37 @@ const addVoiceMessage = async (req, res) => {
   }
 };
 
+//Text Chat
+
+const addTextMessage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { message } = req.body;
+    const userId = req.user._id;
+
+    if (!message || message.trim() === '') {
+      return res.status(400).json({ message: 'Text message cannot be empty' });
+    }
+
+    const task = await Task.findById(id);
+    if (!task) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    task.textMessages.push({
+      user: userId,
+      message
+    });
+
+    await task.save();
+
+    res.json({ message: 'Text message added', task });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to add text message', error: err.message });
+  }
+};
+
+
 // Delete Task
 const deleteTask = async (req, res) => {
   try {
@@ -204,7 +235,7 @@ const getTaskById = async (req, res) => {
 
     const task = await Task.findById(id)
       .populate('job').populate('category')
-      .populate('voiceMessage.user', 'name')
+      .populate('voiceMessage.user', 'name').populate('textMessages.user','name')
       .exec();
 
     if (!task) {
@@ -247,5 +278,6 @@ module.exports = {
   getAllTasks,
   getTasksByJobId,
   getTaskById,
+  addTextMessage,
   filterByCategory
 };
