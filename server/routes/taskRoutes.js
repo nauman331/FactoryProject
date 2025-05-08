@@ -28,7 +28,7 @@ router.get('/', protect, getAllTasks);                                          
 router.get('/job/:jobId', protect, getTasksByJobId);                                           // Get tasks by job ID
 router.get('/category/:categoryId', protect, filterByCategory);                                // Filter tasks by category
 router.get('/:id', protect, getTaskById);                                                      // Get task by ID
-router.put('/:id', protect, updateTask);                                                       // Update a task
+router.put('/:id', protect, fileFields, updateTask);                                                       // Update a task
 router.post('/:id/voice', protect, voiceUpload, addVoiceMessage);                              // Add voice message to task
 router.post('/:id/text', protect, addTextMessage);                                             // Add text message to task
 router.delete('/:id', protect, checkRole(['admin', 'superadmin']), deleteTask);                // Delete a task

@@ -63,21 +63,31 @@ const createTask = async (req, res) => {
   }
 };
 
-// Update Task
 const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, status, description, color, size, quantity, category } = req.body;
+    const {
+      title, status, description, color, size, quantity, category,
+      existingImages = '[]', existingDocuments = '[]'
+    } = req.body;
 
-    // Fetch the current task
+    // Parse existing image/document URLs from JSON strings
+    const parsedImages = JSON.parse(existingImages);
+    const parsedDocuments = JSON.parse(existingDocuments);
+
+    // Initialize arrays for updated media
+    let images = Array.isArray(parsedImages) ? [...parsedImages] : [parsedImages];
+    let documents = Array.isArray(parsedDocuments) ? [...parsedDocuments] : [parsedDocuments];
+
+    // Fetch the task
     const task = await Task.findById(id);
     if (!task) {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    // Save the current state of the task to history
+    // Save history
     const historyEntry = {
-      updatedBy: req.user._id, // Assuming req.user._id contains the ID of the user making the update
+      updatedBy: req.user._id,
       previousState: {
         title: task.title,
         description: task.description,
@@ -85,14 +95,24 @@ const updateTask = async (req, res) => {
         size: task.size,
         quantity: task.quantity,
         status: task.status,
-        category: task.category
+        category: task.category,
+        images: task.images,
+        documents: task.documents
       }
     };
-
-    // Push the history entry to the history array
     task.history.push(historyEntry);
 
-    // Now, update the task with the new values
+    // Handle newly uploaded files
+    for (const file of req.files || []) {
+      const uploadedUrl = await uploadToCloudinary(file.path, 'factory/tasks');
+      if (file.mimetype.includes('image')) {
+        images.push(uploadedUrl);
+      } else if (file.mimetype.includes('pdf')) {
+        documents.push(uploadedUrl);
+      }
+    }
+
+    // Update task fields
     task.title = title;
     task.status = status;
     task.description = description;
@@ -100,11 +120,12 @@ const updateTask = async (req, res) => {
     task.size = size;
     task.quantity = quantity;
     task.category = category;
+    task.images = images;
+    task.documents = documents;
 
-    // Save the updated task
     const updatedTask = await task.save();
 
-    // Optionally, update the job status
+    // Optionally update related job status
     await checkAndUpdateJobStatus(updatedTask.job);
 
     res.json({ message: 'Product updated successfully', task: updatedTask });
@@ -235,7 +256,7 @@ const getTaskById = async (req, res) => {
 
     const task = await Task.findById(id)
       .populate('job').populate('category')
-      .populate('voiceMessage.user', 'name').populate('textMessages.user','name')
+      .populate('voiceMessage.user', 'name').populate('textMessages.user', 'name')
       .exec();
 
     if (!task) {
