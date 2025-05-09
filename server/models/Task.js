@@ -11,7 +11,7 @@ const taskSchema = new mongoose.Schema({
     type: String, 
     enum: [
       'pending',
-      'mockup-development', 
+      'mockup-designing', 
       'pattern-development', 
       'material-sourcing',
       'printing',

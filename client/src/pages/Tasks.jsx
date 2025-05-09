@@ -1,68 +1,65 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Container, Row, Col, Card, Spinner, Badge, Form } from 'react-bootstrap';
+import { Container, Row, Col, Card, Spinner, Badge } from 'react-bootstrap';
 import { backendURL } from '../utils/exports';
+
+const roleStatusMap = {
+  manager: [
+    'pending',
+    'mockup-designing',
+    'pattern-development',
+    'material-sourcing',
+    'printing',
+    'embossing',
+    'dye-making',
+    'rough-sample',
+    'cutting',
+    'stitching',
+  ],
+  designer: ['mockup-designing'],
+  'pattern-developer': ['pattern-development'],
+  'cutting-person': ['cutting'],
+  stitcher: ['stitching'],
+};
 
 const TasksList = () => {
   const { id } = useParams();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState([]);
-  const [filteredTasks, setFilteredTasks] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user"));
-  const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
+
+  const user = JSON.parse(localStorage.getItem('user'));
+  const userRole = user?.role;
+  const isAdmin = userRole === 'admin' || userRole === 'superadmin';
 
   useEffect(() => {
     fetchTasks();
-    fetchCategories();
   }, []);
-  useEffect(() => {
-    fetchTasks();
-  }, [selectedCategory]);
-
-  const fetchCategories = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${backendURL}/category`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await response.json();
-      setCategories(data.categories || []);
-    } catch (error) {
-      console.error('Failed to fetch categories:', error);
-    }
-  };
 
   const fetchTasks = async () => {
     try {
       const token = localStorage.getItem('token');
-      const url = selectedCategory
-        ? `${backendURL}/tasks/category/${selectedCategory}`
-        : `${backendURL}/tasks/job/${id}`;
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+      const response = await fetch(`${backendURL}/tasks/job/${id}`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await response.json();
-      const result = Array.isArray(data) ? data : data.tasks || [];
-      setTasks(result);
-      setFilteredTasks(result); // ✅ updated
+      const allTasks = Array.isArray(data) ? data : data.tasks || [];
+
+      const allowedStatuses = roleStatusMap[userRole] || [];
+      const filtered = allTasks.filter(task =>
+        isAdmin || allowedStatuses.includes(task.status?.toLowerCase())
+      );
+
+      setTasks(filtered);
     } catch (error) {
       console.error('Failed to fetch tasks:', error);
       setTasks([]);
-      setFilteredTasks([]);
     } finally {
       setLoading(false);
     }
   };
-
-
 
   const handleTaskClick = (taskId) => {
     navigate(`/task/${taskId}`);
@@ -79,8 +76,9 @@ const TasksList = () => {
       case 'in progress':
         return 'warning';
       case 'pending':
-      default:
         return 'secondary';
+      default:
+        return 'info';
     }
   };
 
@@ -95,18 +93,9 @@ const TasksList = () => {
   return (
     <Container className="py-5">
       <h2 className="text-success mb-4">All Products</h2>
-      {/* <Form.Group className="mb-4">
-        <Form.Label>Filter by Category</Form.Label>
-        <Form.Select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
-          <option value="">All Categories</option>
-          {categories.map((cat) => (
-            <option key={cat._id} value={cat._id}>{cat.categoryname}</option>
-          ))}
-        </Form.Select>
-      </Form.Group> */}
 
       <Row className="g-4">
-        {filteredTasks?.map((task) => (
+        {tasks.map((task) => (
           <Col key={task._id} xs={12} sm={6} md={4} lg={3}>
             <Card
               onClick={() => handleTaskClick(task._id)}
@@ -126,7 +115,7 @@ const TasksList = () => {
                 e.currentTarget.style.boxShadow = 'none';
               }}
             >
-              {task.images && task.images.length > 0 && (
+              {task.images?.length > 0 && (
                 <Card.Img
                   variant="top"
                   src={task.images[0]}
@@ -152,7 +141,7 @@ const TasksList = () => {
           </Col>
         ))}
 
-        {isAdmin &&
+        {isAdmin && (
           <Col xs={12} sm={6} md={4} lg={3}>
             <Card
               className="d-flex align-items-center justify-content-center h-100 add-task-card shadow-sm"
@@ -173,7 +162,7 @@ const TasksList = () => {
               </div>
             </Card>
           </Col>
-        }
+        )}
       </Row>
     </Container>
   );

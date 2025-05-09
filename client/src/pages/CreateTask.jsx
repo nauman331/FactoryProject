@@ -164,7 +164,7 @@ function CreateTask() {
                 <Form.Select name="status" value={form.status} onChange={handleInputChange} required>
                   <option value="">Select status</option>
                   <option value="pending">Pending</option>
-                  <option value="mockup-development">Mockup Development</option>
+                  <option value="mockup-designing">Mockup Designing</option>
                   <option value="pattern-development">Pattern Development</option>
                   <option value="material-sourcing">Material Sourcing</option>
                   <option value="printing">Printing</option>

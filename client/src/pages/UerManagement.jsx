@@ -119,7 +119,11 @@ const UserManagement = () => {
             onChange={e => setForm({ ...form, role: e.target.value })}
           >
             <option value="admin">Admin</option>
-            <option value="member">Member</option>
+            <option value="manager">Manager</option>
+            <option value="designer">Designer</option>
+            <option value="pattern-developer">Pattern Developer</option>
+            <option value="cutting-person">Cutting Person</option>
+            <option value="stitcher">Stitcher</option>
           </select>
         </div>
         <div className="col-md-1">

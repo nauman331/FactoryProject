@@ -17,7 +17,6 @@ function Navbar({ toggleSidebar }) {
   };
 
   const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
-  const isMember = user?.role === 'member';
 
   return (
     <BootstrapNavbar bg="light" variant="light" className="shadow-sm fixed-top">
@@ -43,7 +42,7 @@ function Navbar({ toggleSidebar }) {
         </BootstrapNavbar.Brand>
 
         {/* Logout Button for Members */}
-        {isMember && (
+        {!isAdmin && (
           <Button
             variant="outline-danger"
             onClick={handleLogout}

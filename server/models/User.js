@@ -3,12 +3,22 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },  // Store password in plaintext
-  role: { type: String, enum: ['superadmin', 'admin', 'member'], required: true },
+  password: { type: String, required: true }, 
+  role: { type: String, 
+    enum: [
+      'superadmin', 
+      'admin', 
+      'manager', 
+      'designer', 
+      'pattern-developer',
+      'cutting-person',
+      'stitcher'
+    ],
+     required: true },
 }, { timestamps: true });
 
 userSchema.methods.matchPassword = function (enteredPassword) {
-  return this.password === enteredPassword;  // Compare plaintext passwords
+  return this.password === enteredPassword;
 };
 
 module.exports = mongoose.model('User', userSchema);
