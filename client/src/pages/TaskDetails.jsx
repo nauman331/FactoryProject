@@ -40,6 +40,7 @@ function SingleTaskDetails() {
 
   const user = JSON.parse(localStorage.getItem("user"));
   const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
+  const isDesigner = user?.role === 'designer'
 
   const recorderRef = useRef(null);
 
@@ -356,7 +357,7 @@ function SingleTaskDetails() {
         </Col>
         <Col xs="auto">
           {
-            isAdmin ?
+            (isAdmin || isDesigner) ?
               <Button variant="outline-success" onClick={() => setShowEditModal(true)}>
                 <FaEdit /> Edit
               </Button>
@@ -583,18 +584,37 @@ function SingleTaskDetails() {
         <Modal.Body className="p-4">
           <Form>
             <div className="row g-4">
-              {/* Title */}
-              <div className="col-md-4 col-12">
-                <Form.Group>
-                  <Form.Label className="fw-semibold">Title</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter product title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                  />
-                </Form.Group>
-              </div>
+              {
+                isAdmin &&
+                <>
+                  {/* Title */}
+                  <div className="col-md-4 col-12">
+                    <Form.Group>
+                      <Form.Label className="fw-semibold">Title</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter product title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                      />
+                    </Form.Group>
+                  </div>
+
+                  {/* Color */}
+                  <div className="col-md-4 col-12">
+                    <Form.Group>
+                      <Form.Label className="fw-semibold">Color</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter product color"
+                        value={color}
+                        onChange={(e) => setColor(e.target.value)}
+                      />
+                    </Form.Group>
+                  </div>
+                </>
+              }
+
 
               {/* Status */}
               <div className="col-md-4 col-12">
@@ -620,57 +640,52 @@ function SingleTaskDetails() {
                 </Form.Group>
               </div>
 
-              {/* Color */}
-              <div className="col-md-4 col-12">
-                <Form.Group>
-                  <Form.Label className="fw-semibold">Color</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter product color"
-                    value={color}
-                    onChange={(e) => setColor(e.target.value)}
-                  />
-                </Form.Group>
-              </div>
+              {
+                isAdmin &&
+                <>
+                  {/* Size */}
+                  <div className="col-md-6 col-12">
+                    <Form.Group>
+                      <Form.Label className="fw-semibold">Size</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter product size"
+                        value={size}
+                        onChange={(e) => setSize(e.target.value)}
+                      />
+                    </Form.Group>
+                  </div>
 
-              {/* Size */}
-              <div className="col-md-6 col-12">
-                <Form.Group>
-                  <Form.Label className="fw-semibold">Size</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter product size"
-                    value={size}
-                    onChange={(e) => setSize(e.target.value)}
-                  />
-                </Form.Group>
-              </div>
+                  {/* Quantity */}
+                  <div className="col-md-6 col-12">
+                    <Form.Group>
+                      <Form.Label className="fw-semibold">Quantity</Form.Label>
+                      <Form.Control
+                        type="number"
+                        placeholder="Enter quantity"
+                        value={quantity}
+                        onChange={(e) => setQuantity(e.target.value)}
+                      />
+                    </Form.Group>
+                  </div>
+                  {/* Description */}
+                  <div className="col-md-6 col-12">
+                    <Form.Group>
+                      <Form.Label className="fw-semibold">Description</Form.Label>
+                      <Form.Control
+                        as="textarea"
+                        rows={4}
+                        placeholder="Enter product description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                      />
+                    </Form.Group>
+                  </div>
+                </>
+              }
 
-              {/* Quantity */}
-              <div className="col-md-6 col-12">
-                <Form.Group>
-                  <Form.Label className="fw-semibold">Quantity</Form.Label>
-                  <Form.Control
-                    type="number"
-                    placeholder="Enter quantity"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                  />
-                </Form.Group>
-              </div>
-              {/* Description */}
-              <div className="col-md-6 col-12">
-                <Form.Group>
-                  <Form.Label className="fw-semibold">Description</Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    rows={4}
-                    placeholder="Enter product description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                </Form.Group>
-              </div>
+
+
               {/* Images and pdfs */}
               <Form.Group className="col-md-6 col-12">
                 <Form.Label>Upload Images & PDFs</Form.Label>
