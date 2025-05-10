@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { backendURL } from '../utils/exports';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaPen, FaPlusCircle, FaBriefcase } from 'react-icons/fa';
+import { FaPen, FaPlusCircle } from 'react-icons/fa';
 import { Form } from 'react-bootstrap';
 
 const JobList = () => {
