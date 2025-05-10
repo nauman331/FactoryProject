@@ -91,7 +91,7 @@ const getJobs = async (req, res) => {
   try {
     const user = req.user;
     const userRole = user.role;
-    
+
 
     let jobs;
 
