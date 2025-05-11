@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Form, Button, Container, Row, Col, Card, Alert, Tooltip, OverlayTrigger, Spinner } from 'react-bootstrap';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Trash } from 'react-bootstrap-icons';
@@ -25,6 +25,32 @@ function CreateTask() {
   const [pdfs, setPdfs] = useState([]);
   const [dragActive, setDragActive] = useState(false);
   const [message, setMessage] = useState(null);
+  const pasteAreaRef = useRef(null);
+
+  useEffect(() => {
+    const handlePaste = (e) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.type.indexOf("image") === 0) {
+          const file = item.getAsFile();
+          if (file) {
+            setImages(prev => [...prev, file]);
+          }
+        }
+      }
+    };
+
+    // Attach listener to the whole document
+    document.addEventListener("paste", handlePaste);
+
+    return () => {
+      document.removeEventListener("paste", handlePaste);
+    };
+  }, []);
+
 
   const fetchCategories = async () => {
     try {
@@ -253,6 +279,7 @@ function CreateTask() {
           <Form.Group className="mb-4">
             <Form.Label>Upload Images & PDFs</Form.Label>
             <div
+              ref={pasteAreaRef}
               className={`p-4 text-center border border-2 rounded ${dragActive ? 'border-success bg-light' : 'border-secondary'}`}
               onDragOver={e => {
                 e.preventDefault();
@@ -262,6 +289,7 @@ function CreateTask() {
               onDrop={handleDrop}
             >
               <p className="mb-2">Drag and drop images or PDFs here</p>
+              <p className="text-muted small">You can also paste an image using Ctrl + V</p>
               <Form.Control
                 type="file"
                 accept="image/*,application/pdf"

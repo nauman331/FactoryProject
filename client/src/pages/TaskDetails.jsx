@@ -43,6 +43,32 @@ function SingleTaskDetails() {
   const isDesigner = user?.role === 'designer'
 
   const recorderRef = useRef(null);
+  const pasteAreaRef = useRef(null);
+
+  useEffect(() => {
+    const handlePaste = (e) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.type.indexOf("image") === 0) {
+          const file = item.getAsFile();
+          if (file) {
+            setImages(prev => [...prev, file]);
+          }
+        }
+      }
+    };
+
+    // Attach listener to the whole document
+    document.addEventListener("paste", handlePaste);
+
+    return () => {
+      document.removeEventListener("paste", handlePaste);
+    };
+  }, []);
+
 
   useEffect(() => {
     const objectUrls = [];
@@ -690,6 +716,7 @@ function SingleTaskDetails() {
               <Form.Group className="col-md-6 col-12">
                 <Form.Label>Upload Images & PDFs</Form.Label>
                 <div
+                ref={pasteAreaRef}
                   className={`p-4 text-center border border-2 rounded ${dragActive ? 'border-success bg-light' : 'border-secondary'}`}
                   onDragOver={e => {
                     e.preventDefault();
@@ -699,6 +726,7 @@ function SingleTaskDetails() {
                   onDrop={handleDrop}
                 >
                   <p className="mb-2">Drag and drop images or PDFs here</p>
+                  <p className="text-muted small">You can also paste an image using Ctrl + V</p>
                   <Form.Control
                     type="file"
                     accept="image/*,application/pdf"
