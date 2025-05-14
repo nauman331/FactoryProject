@@ -2,5 +2,3 @@
 // export const backendURL = "http://localhost:5000/api"
 // export const backendURL = "https://artistic-acceptance-production.up.railway.app/api"
 export const backendURL = "https://factoryproject.onrender.com/api"
-
-  

@@ -127,7 +127,7 @@ function CreateTask() {
 
       const result = await response.json();
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Task created successfully!' });
+        setMessage({ type: 'success', text: 'Product created successfully!' });
         setForm({
           title: '',
           description: '',
