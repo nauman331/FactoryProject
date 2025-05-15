@@ -93,10 +93,6 @@ const TasksList = () => {
   return (
     <Container className="py-5">
       <h2 className="text-success mb-4">All Products</h2>
-      {
-        tasks.length < 1 && 
-        <h1 className='text-center text-muted' style={{marginTop: "150px"}}>No Tasks for you today, in this job. Enjoy!</h1>
-      }
       <Row className="g-4">
         {tasks.map((task) => (
           <Col key={task._id} xs={12} sm={6} md={4} lg={3}>
