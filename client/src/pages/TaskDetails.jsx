@@ -714,7 +714,7 @@ function SingleTaskDetails() {
 
               {/* Images and pdfs */}
               <Form.Group className="col-md-6 col-12">
-                <Form.Label>Upload Images & PDFs</Form.Label>
+                <Form.Label>Upload Images & PDFs(Up To 10MB)</Form.Label>
                 <div
                 ref={pasteAreaRef}
                   className={`p-4 text-center border border-2 rounded ${dragActive ? 'border-success bg-light' : 'border-secondary'}`}
