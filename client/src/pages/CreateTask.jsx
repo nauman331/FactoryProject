@@ -277,7 +277,7 @@ function CreateTask() {
           </Row>
 
           <Form.Group className="mb-4">
-            <Form.Label>Upload Images & PDFs</Form.Label>
+            <Form.Label>Upload Images & PDFs(Up To 10MB)</Form.Label>
             <div
               ref={pasteAreaRef}
               className={`p-4 text-center border border-2 rounded ${dragActive ? 'border-success bg-light' : 'border-secondary'}`}
